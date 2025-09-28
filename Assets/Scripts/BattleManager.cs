@@ -173,19 +173,6 @@ public class BattleManager : MonoBehaviour
     //}
 
     /// <summary>
-    /// Have animator call next Action Command.
-    /// </summary>
-    public void AnimatorDequeueNextActionCommand()
-    {
-        actionCommandManager.ActivateNextActionCommand();
-    }
-
-    public void AnimatorMakeAttack()
-    {
-        Debug.LogWarning("Make attack!!");
-    }
-
-    /// <summary>
     /// Add Heroes to Battle Manager's attention.
     /// </summary>
     /// <param name="heroes"></param>
@@ -356,6 +343,53 @@ public class BattleManager : MonoBehaviour
     }
 
     /// <summary>
+    /// Advance the current unit turn's animation step. Within that animation, Action Command should be made.
+    /// </summary>
+    public void AdvanceNextAttackAnimation()
+    {
+        currentUnitsTurn.GetComponent<UnitAttack>().ActivateNextAttackStep();
+    }
+
+    /// <summary>
+    /// Prepare an Action Command. Does not advance animation.
+    /// </summary>
+    public void PrepareNextActionCommand()
+    {
+        if (strikesPrepared == null)
+        {
+            Debug.LogError("Strikes prepared is empty!!");
+            return;
+        }
+        if (strikesPrepared.Count <= 0)
+        {
+            Debug.Log("Strikes was empty. Skipping...");
+            return;
+        }
+        Debug.Log("Preparing the next strike...");
+        AttackStep nextStrike = strikesPrepared.Dequeue();
+        ActionCommand.ActionButtonPressed getButtonRequired = nextStrike.GetRequiredButton();
+        switch (nextStrike.GetActionCommandType())
+        {
+            case ActionCommand.ActionType.RAPID_PRESS:
+                Enum.TryParse(nextStrike.GetSubType(), out ActionCommandRapidPress.RapidPressSelectType subTypeRapidGet);
+                actionCommandManager.PrepareRapidPress(subTypeRapidGet, getButtonRequired);
+                break;
+            case ActionCommand.ActionType.SEQUENCE_PRESS:
+                //Enum.TryParse(attackStep.GetSubType(), out ActionCommandSequencePress.SequencePressType subTypeSequenceGet);
+                //actionCommandManager.PrepareSequencePress(subTypeSequenceGet, getButtonRequired);
+                Debug.LogError("ERROR: Sequence Press not yet implemented!!");
+                break;
+            case ActionCommand.ActionType.TIMELY_PRESS:
+                Enum.TryParse(nextStrike.GetSubType(), out ActionCommandTimelyPress.TimelyPressSpeedType subTypeTimelyGet);
+                actionCommandManager.PrepareTimelyPress(subTypeTimelyGet, getButtonRequired);
+                break;
+            case ActionCommand.ActionType.STICK_CONTROL:
+                Debug.LogError("ERROR: Stick Control not yet implemented!!");
+                break;
+        }
+    }
+
+    /// <summary>
     /// Update current BattleState to cut off Player input.
     /// </summary>
     public void ForceStopPlayerInput()
@@ -504,7 +538,7 @@ public class BattleManager : MonoBehaviour
     /// </summary>
     private void PrepareActionCommandManager()
     {
-        actionCommandManager.AllocateGuiComponents();
+        actionCommandManager.AllocateGuiComponents(this);
         actionCommandManager.ClearOut();
         actionCommandManager.gameObject.SetActive(true);
     }
@@ -692,14 +726,13 @@ public class BattleManager : MonoBehaviour
         AttackStep[] getStrikes = attack.GetStrikes();
         for (int i = 0; i < getStrikes.Length; i++)
         {
-            Debug.LogWarning("Enqueue and Prepare Attack");
-            if (useActionCommands)
-            {
-                PrepareActionCommand(getStrikes[i]);
-            }
             strikesPrepared.Enqueue(getStrikes[i]);
         }
         currentUnitsTurn.GetComponent<UnitAttack>().AnimationBeginAttack();
+        //if (PlayersTurn())
+        //{
+        //    PrepareNextActionCommand();
+        //}
     }
 
     /// <summary>
@@ -973,34 +1006,6 @@ public class BattleManager : MonoBehaviour
     private void TurnOffMenuMoment()
     {
         itemsMenuManager.gameObject.SetActive(false);
-    }
-
-    /// <summary>
-    /// Prepare and Enqueue an Action Command.
-    /// </summary>
-    /// <param name="attackStep"></param>
-    private void PrepareActionCommand(AttackStep attackStep)
-    {
-        ActionCommand.ActionButtonPressed getButtonRequired = attackStep.GetRequiredButton();
-        switch (attackStep.GetActionCommandType())
-        {
-            case ActionCommand.ActionType.RAPID_PRESS:
-                Enum.TryParse(attackStep.GetSubType(), out ActionCommandRapidPress.RapidPressSelectType subTypeRapidGet);
-                actionCommandManager.PrepareRapidPress(subTypeRapidGet, getButtonRequired);
-                break;
-            case ActionCommand.ActionType.SEQUENCE_PRESS:
-                //Enum.TryParse(attackStep.GetSubType(), out ActionCommandSequencePress.SequencePressType subTypeSequenceGet);
-                //actionCommandManager.PrepareSequencePress(subTypeSequenceGet, getButtonRequired);
-                Debug.LogError("ERROR: Sequence Press not yet implemented!!");
-                break;
-            case ActionCommand.ActionType.TIMELY_PRESS:
-                Enum.TryParse(attackStep.GetSubType(), out ActionCommandTimelyPress.TimelyPressSpeedType subTypeTimelyGet);
-                actionCommandManager.PrepareTimelyPress(subTypeTimelyGet, getButtonRequired);
-                break;
-            case ActionCommand.ActionType.STICK_CONTROL:
-                Debug.LogError("ERROR: Stick Control not yet implemented!!");
-                break;
-        }
     }
 
     /// <summary>

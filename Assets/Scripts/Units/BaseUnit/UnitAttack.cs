@@ -35,7 +35,7 @@ public class UnitAttack : MonoBehaviour
     public void ActivateActionCommand()
     {
         Debug.Log("Animator activate next Action Command");
-        battleManager.AnimatorDequeueNextActionCommand();
+        battleManager.PrepareNextActionCommand();
     }
 
     /// <summary>

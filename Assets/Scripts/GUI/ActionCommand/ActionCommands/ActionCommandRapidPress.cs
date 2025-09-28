@@ -213,14 +213,6 @@ public class ActionCommandRapidPress : ActionCommand
     public override GameObject TurnOffThisGui()
     {
         Debug.Log("Turn off Rapid Press GUI");
-        if (nextActionCommand == null)
-        {
-            actionCommandManager.ClearOutLatestPreparedActionCommand();
-        }
-        else
-        {
-            nextActionCommand = null;
-        }
         return gameObject;
     }
 

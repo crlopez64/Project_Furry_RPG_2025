@@ -137,17 +137,6 @@ public class ActionCommand : MonoBehaviour
     }
 
     /// <summary>
-    /// Return the Slider being used, if any.
-    /// </summary>
-    /// <returns></returns>
-    public ActionCommandSlider ReturnSlider()
-    {
-        ActionCommandSlider getSlider = slider;
-        slider = null;
-        return getSlider;
-    }
-
-    /// <summary>
     /// Turn off this Action GUI and anything else related to its immediate function.
     /// Make sure this is the very last command an Action Command runs.
     /// </summary>

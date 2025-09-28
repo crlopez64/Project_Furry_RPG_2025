@@ -101,21 +101,6 @@ public class ActionCommandTimelyPress : ActionCommand
         }
     }
 
-    public override GameObject TurnOffThisGui()
-    {
-        Debug.Log("Turn off Timely Press GUI");
-        actionCommandManager.ReturnSlider(slider);
-        if (nextActionCommand == null)
-        {
-            actionCommandManager.ClearOutLatestPreparedActionCommand();
-        }
-        else
-        {
-            nextActionCommand = null;
-        }
-        return gameObject;
-    }
-
     /// <summary>
     /// Get the final String of this Attack Command after considering this subtype.
     /// </summary>
