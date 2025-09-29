@@ -15,7 +15,8 @@ public class Attack : BaseItem
     //TODO: Add more stuff once the basic function of Battle works
     private int requiredMana;
 
-    public Attack(int animationID, string name, string description, byte requiredLevel, int requiredMana, IntendedTarget target, UnitStats.UnitType attackType, AttackStep[] strikes)
+    public Attack(int animationID, string name, string description, byte requiredLevel, int requiredMana,
+        IntendedTarget target, UnitStats.UnitType attackType, AttackStep[] strikes)
         : base(animationID, name, description, target)
     {
         whereToMovePriorToUse = WhereToMovePriorToUse.STAY_IN_PLACE;
@@ -26,7 +27,8 @@ public class Attack : BaseItem
         this.strikes = strikes;
     }
 
-    public Attack(int animationID, ItemClassification classification, string name, string description, byte requiredLevel, int requiredMana, IntendedTarget target, UnitStats.UnitType attackType, AttackStep[] strikes)
+    public Attack(int animationID, ItemClassification classification, string name, string description, byte requiredLevel, int requiredMana,
+        IntendedTarget target, UnitStats.UnitType attackType, AttackStep[] strikes)
         : base(animationID, name, description, target)
     {
         whereToMovePriorToUse = WhereToMovePriorToUse.STAY_IN_PLACE;

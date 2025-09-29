@@ -9,22 +9,25 @@ using static UnitStats;
 /// </summary>
 public class AttackStep
 {
-    private readonly ActionType actionCommandType;
-    private readonly ActionButtonPressed[] buttonsRequiredToSelect;
-    private readonly Dictionary<StatEffectType, int> statValues;
     private readonly Dictionary<StatusAilment, int> statusAilments;
-    private readonly string subType;
+    private readonly Dictionary<StatEffectType, int> statValues;
+    private readonly BonusTypeOnActionCommand bonusTypeOnActionCommand;
+    private readonly ActionButtonPressed[] buttonsRequiredToSelect;
+    private readonly ActionType actionCommandType;
     private readonly byte statusAilmentChance;
+    private readonly string subType;
 
-    public AttackStep(ActionType actionCommandType, string subType, ActionButtonPressed[] buttonsRequiredToSelect, 
+    public AttackStep(ActionType actionCommandType, string subType,
+        BonusTypeOnActionCommand bonusTypeOnActionCommand, ActionButtonPressed[] buttonsRequiredToSelect, 
         Dictionary<StatEffectType, int> statValues, Dictionary<StatusAilment, int> statusAilments,
         byte statusAilmentChance)
     {
-        this.actionCommandType = actionCommandType;
+        this.bonusTypeOnActionCommand = bonusTypeOnActionCommand;
         this.buttonsRequiredToSelect = buttonsRequiredToSelect;
-        this.statValues = statValues;
-        this.statusAilments = statusAilments;
         this.statusAilmentChance = statusAilmentChance;
+        this.actionCommandType = actionCommandType;
+        this.statusAilments = statusAilments;
+        this.statValues = statValues;
         this.subType = subType;
     }
 
@@ -84,5 +87,14 @@ public class AttackStep
     public ActionType GetActionCommandType()
     {
         return actionCommandType;
+    }
+
+    /// <summary>
+    /// Return what type of Bonus this BaseItem should give, provided it requires an Action Command.
+    /// </summary>
+    /// <returns></returns>
+    public BonusTypeOnActionCommand GetBonusTypeOnActionCommand()
+    {
+        return bonusTypeOnActionCommand;
     }
 }

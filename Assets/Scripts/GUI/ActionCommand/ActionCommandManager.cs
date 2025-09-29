@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using static BaseItem;
 
 /// <summary>
 /// Manager in charge of holding Action Commands for Player to interact with.
@@ -12,7 +13,7 @@ public class ActionCommandManager : MonoBehaviour
     private ActionCommandRapidPress rapidPress;
     private ActionCommandSlider slider;
     private ActionCommand currentActionCommand;
-    private TestActionCommandResult testActionCommandResult;
+    private TestActionCommandResult actionCommandResult;
 
     /// <summary>
     /// Allocate all Gui Action Command components.
@@ -49,7 +50,7 @@ public class ActionCommandManager : MonoBehaviour
     /// </summary>
     /// <param name="pressType"></param>
     /// <param name="buttonRequired"></param>
-    public void PrepareRapidPress(ActionCommandRapidPress.RapidPressSelectType pressType, ActionCommand.ActionButtonPressed buttonRequired)
+    public void PrepareRapidPress(ActionCommandRapidPress.RapidPressSelectType pressType, ActionCommand.ActionButtonPressed buttonRequired, BonusTypeOnActionCommand bonusTypeOnActionCommand)
     {
         if (rapidPress.gameObject.activeInHierarchy)
         {
@@ -59,13 +60,13 @@ public class ActionCommandManager : MonoBehaviour
         switch (pressType)
         {
             case ActionCommandRapidPress.RapidPressSelectType.SHORT:
-                rapidPress.gameObject.GetComponent<ActionCommandRapidPress>().SetRapidPressShort(buttonRequired);
+                rapidPress.gameObject.GetComponent<ActionCommandRapidPress>().SetRapidPressShort(buttonRequired, bonusTypeOnActionCommand);
                 break;
             case ActionCommandRapidPress.RapidPressSelectType.MEDIUM:
-                rapidPress.gameObject.GetComponent<ActionCommandRapidPress>().SetRapidPressMedium(buttonRequired);
+                rapidPress.gameObject.GetComponent<ActionCommandRapidPress>().SetRapidPressMedium(buttonRequired, bonusTypeOnActionCommand);
                 break;
             case ActionCommandRapidPress.RapidPressSelectType.LONG:
-                rapidPress.gameObject.GetComponent<ActionCommandRapidPress>().SetRapidPressLong(buttonRequired);
+                rapidPress.gameObject.GetComponent<ActionCommandRapidPress>().SetRapidPressLong(buttonRequired, bonusTypeOnActionCommand);
                 break;
             case ActionCommandRapidPress.RapidPressSelectType.CONTROL_RAGE:
                 rapidPress.gameObject.GetComponent<ActionCommandRapidPress>().SetRapidPressControlRage(0.5f, 20, buttonRequired, slider.GetComponent<ActionCommandSlider>());
@@ -82,7 +83,7 @@ public class ActionCommandManager : MonoBehaviour
     /// </summary>
     /// <param name="pressType"></param>
     /// <param name="buttonRequired"></param>
-    public void PrepareTimelyPress(ActionCommandTimelyPress.TimelyPressSpeedType pressType, ActionCommand.ActionButtonPressed buttonRequired)
+    public void PrepareTimelyPress(ActionCommandTimelyPress.TimelyPressSpeedType pressType, ActionCommand.ActionButtonPressed buttonRequired, BaseItem.BonusTypeOnActionCommand bonusTypeOnActionCommand)
     {
         if (timelyPress.gameObject.activeInHierarchy)
         {
@@ -93,20 +94,19 @@ public class ActionCommandManager : MonoBehaviour
         switch (pressType)
         {
             case ActionCommandTimelyPress.TimelyPressSpeedType.SLOW:
-                timelyPress.gameObject.GetComponent<ActionCommandTimelyPress>().SetTimelyPressSlow(slider.GetComponent<ActionCommandSlider>(), buttonRequired);
+                timelyPress.gameObject.GetComponent<ActionCommandTimelyPress>().SetTimelyPressSlow(slider.GetComponent<ActionCommandSlider>(), buttonRequired, bonusTypeOnActionCommand);
                 break;
             case ActionCommandTimelyPress.TimelyPressSpeedType.MEDIUM:
-                timelyPress.gameObject.GetComponent<ActionCommandTimelyPress>().SetTimelyPressMedium(slider.GetComponent<ActionCommandSlider>(), buttonRequired);
+                timelyPress.gameObject.GetComponent<ActionCommandTimelyPress>().SetTimelyPressMedium(slider.GetComponent<ActionCommandSlider>(), buttonRequired, bonusTypeOnActionCommand);
                 break;
             case ActionCommandTimelyPress.TimelyPressSpeedType.QUICK:
-                timelyPress.gameObject.GetComponent<ActionCommandTimelyPress>().SetTimelyPressQuick(slider.GetComponent<ActionCommandSlider>(), buttonRequired);
+                timelyPress.gameObject.GetComponent<ActionCommandTimelyPress>().SetTimelyPressQuick(slider.GetComponent<ActionCommandSlider>(), buttonRequired, bonusTypeOnActionCommand);
                 break;
             case ActionCommandTimelyPress.TimelyPressSpeedType.HIGH_NOON_SLOW:
-                timelyPress.SetHighNoonPressSlow(slider);
-                timelyPress.gameObject.GetComponent<ActionCommandTimelyPress>().SetHighNoonPressSlow(slider.GetComponent<ActionCommandSlider>());
+                timelyPress.gameObject.GetComponent<ActionCommandTimelyPress>().SetHighNoonPressSlow(slider.GetComponent<ActionCommandSlider>(), bonusTypeOnActionCommand);
                 break;
             case ActionCommandTimelyPress.TimelyPressSpeedType.HIGH_NOON_QUICK:
-                timelyPress.gameObject.GetComponent<ActionCommandTimelyPress>().SetHighNoonPressFast(slider.GetComponent<ActionCommandSlider>());
+                timelyPress.gameObject.GetComponent<ActionCommandTimelyPress>().SetHighNoonPressFast(slider.GetComponent<ActionCommandSlider>(), bonusTypeOnActionCommand);
                 break;
             default:
                 break;
@@ -120,12 +120,10 @@ public class ActionCommandManager : MonoBehaviour
     /// </summary>
     /// <param name="actionType"></param>
     /// <param name="transform"></param>
-    public void ReportActionCommandPass(ActionCommand.ActionType actionType, Transform transform)
+    public void ReportActionCommandPass(Transform transform, BaseItem.BonusTypeOnActionCommand bonusTypeOnActionCommand)
     {
         Debug.Log("Reporting Success!!");
-        testActionCommandResult.gameObject.transform.position = transform.position;
-        testActionCommandResult.SetText("SUCCESS");
-        testActionCommandResult.gameObject.SetActive(true);
+        SetActionCommandBonus(transform, bonusTypeOnActionCommand);
         ClearOut();
         battleManager.AdvanceNextAttackAnimation();
     }
@@ -138,9 +136,9 @@ public class ActionCommandManager : MonoBehaviour
     public void ReportActionCommandFail(ActionCommand.ActionType actionType, Transform transform)
     {
         Debug.LogWarning("Reporting Fail...");
-        testActionCommandResult.gameObject.transform.position = transform.position;
-        testActionCommandResult.SetText("FAIL");
-        testActionCommandResult.gameObject.SetActive(true);
+        actionCommandResult.gameObject.transform.position = transform.position;
+        actionCommandResult.SetText("FAIL");
+        actionCommandResult.gameObject.SetActive(true);
         ClearOut();
         battleManager.AdvanceNextAttackAnimation();
     }
@@ -194,10 +192,35 @@ public class ActionCommandManager : MonoBehaviour
         slider = GetComponentInChildren<ActionCommandSlider>(true);
         rapidPress = GetComponentInChildren<ActionCommandRapidPress>(true);
         timelyPress = GetComponentInChildren<ActionCommandTimelyPress>(true);
-        testActionCommandResult = GetComponentInChildren<TestActionCommandResult>(true);
+        actionCommandResult = GetComponentInChildren<TestActionCommandResult>(true);
         timelyPress.SetActionCommandManager(this);
         rapidPress.SetActionCommandManager(this);
-        testActionCommandResult.ClearText();
+        actionCommandResult.ClearText();
     }
 
+    /// <summary>
+    /// Set TsetActionCommandBonus text.
+    /// </summary>
+    /// <param name="transform"></param>
+    /// <param name="bonusTypeOnActionCommand"></param>
+    private void SetActionCommandBonus(Transform transform, BaseItem.BonusTypeOnActionCommand bonusTypeOnActionCommand)
+    {
+        actionCommandResult.gameObject.transform.position = transform.position;
+        switch (bonusTypeOnActionCommand)
+        {
+            case BaseItem.BonusTypeOnActionCommand.NONE:
+                actionCommandResult.SetText("SUCCESS");
+                break;
+            case BaseItem.BonusTypeOnActionCommand.DAMAGE_OUTPUT:
+                actionCommandResult.SetText("DMG+");
+                break;
+            case BaseItem.BonusTypeOnActionCommand.MANA_GAIN:
+                actionCommandResult.SetText("MNA+");
+                break;
+            case BaseItem.BonusTypeOnActionCommand.CRIT_INCREASE:
+                actionCommandResult.SetText("CRIT+");
+                break;
+        }
+        actionCommandResult.gameObject.SetActive(true);
+    }
 }

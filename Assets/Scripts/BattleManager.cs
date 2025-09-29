@@ -372,16 +372,16 @@ public class BattleManager : MonoBehaviour
         {
             case ActionCommand.ActionType.RAPID_PRESS:
                 Enum.TryParse(nextStrike.GetSubType(), out ActionCommandRapidPress.RapidPressSelectType subTypeRapidGet);
-                actionCommandManager.PrepareRapidPress(subTypeRapidGet, getButtonRequired);
+                actionCommandManager.PrepareRapidPress(subTypeRapidGet, getButtonRequired, nextStrike.GetBonusTypeOnActionCommand());
                 break;
             case ActionCommand.ActionType.SEQUENCE_PRESS:
                 //Enum.TryParse(attackStep.GetSubType(), out ActionCommandSequencePress.SequencePressType subTypeSequenceGet);
-                //actionCommandManager.PrepareSequencePress(subTypeSequenceGet, getButtonRequired);
+                //actionCommandManager.PrepareSequencePress(subTypeSequenceGet, getButtonRequired, nextStrike.GetBonusTypeOnActionCommand());
                 Debug.LogError("ERROR: Sequence Press not yet implemented!!");
                 break;
             case ActionCommand.ActionType.TIMELY_PRESS:
                 Enum.TryParse(nextStrike.GetSubType(), out ActionCommandTimelyPress.TimelyPressSpeedType subTypeTimelyGet);
-                actionCommandManager.PrepareTimelyPress(subTypeTimelyGet, getButtonRequired);
+                actionCommandManager.PrepareTimelyPress(subTypeTimelyGet, getButtonRequired, nextStrike.GetBonusTypeOnActionCommand());
                 break;
             case ActionCommand.ActionType.STICK_CONTROL:
                 Debug.LogError("ERROR: Stick Control not yet implemented!!");

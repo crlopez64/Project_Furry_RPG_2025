@@ -127,7 +127,7 @@ public class ActionCommandTimelyPress : ActionCommand
         }
         if (DrainerReadyForPlayer())
         {
-            actionCommandManager.ReportActionCommandPass(actionType, gameObject.transform);
+            actionCommandManager.ReportActionCommandPass(gameObject.transform, bonusTypeOnActionCommand);
         }
         else
         {
@@ -149,9 +149,9 @@ public class ActionCommandTimelyPress : ActionCommand
     /// </summary>
     /// <param name="slider"></param>
     /// <param name="buttonToPress"></param>
-    public void SetTimelyPressSlow(ActionCommandSlider slider, ActionButtonPressed buttonToPress)
+    public void SetTimelyPressSlow(ActionCommandSlider slider, ActionButtonPressed buttonToPress, BaseItem.BonusTypeOnActionCommand bonusTypeOnActionCommand)
     {
-        PrepareTimelyPress(TimelyPressSpeedType.SLOW, ActionType.TIMELY_PRESS, buttonToPress);
+        PrepareTimelyPress(TimelyPressSpeedType.SLOW, ActionType.TIMELY_PRESS, buttonToPress, bonusTypeOnActionCommand);
         PrepareSlider(slider, TimelyPressSpeedType.SLOW);
     }
 
@@ -160,9 +160,9 @@ public class ActionCommandTimelyPress : ActionCommand
     /// </summary>
     /// <param name="slider"></param>
     /// <param name="buttonToPress"></param>
-    public void SetTimelyPressMedium(ActionCommandSlider slider, ActionButtonPressed buttonToPress)
+    public void SetTimelyPressMedium(ActionCommandSlider slider, ActionButtonPressed buttonToPress, BaseItem.BonusTypeOnActionCommand bonusTypeOnActionCommand)
     {
-        PrepareTimelyPress(TimelyPressSpeedType.MEDIUM, ActionType.TIMELY_PRESS, buttonToPress);
+        PrepareTimelyPress(TimelyPressSpeedType.MEDIUM, ActionType.TIMELY_PRESS, buttonToPress, bonusTypeOnActionCommand);
         PrepareSlider(slider, TimelyPressSpeedType.MEDIUM);
     }
 
@@ -171,9 +171,9 @@ public class ActionCommandTimelyPress : ActionCommand
     /// </summary>
     /// <param name="slider"></param>
     /// <param name="buttonToPress"></param>
-    public void SetTimelyPressQuick(ActionCommandSlider slider, ActionButtonPressed buttonToPress)
+    public void SetTimelyPressQuick(ActionCommandSlider slider, ActionButtonPressed buttonToPress, BaseItem.BonusTypeOnActionCommand bonusTypeOnActionCommand)
     {
-        PrepareTimelyPress(TimelyPressSpeedType.QUICK, ActionType.TIMELY_PRESS, buttonToPress);
+        PrepareTimelyPress(TimelyPressSpeedType.QUICK, ActionType.TIMELY_PRESS, buttonToPress, bonusTypeOnActionCommand);
         PrepareSlider(slider, TimelyPressSpeedType.QUICK);
     }
 
@@ -181,9 +181,9 @@ public class ActionCommandTimelyPress : ActionCommand
     /// Make the Timely Press last a while before requiring a random button press.
     /// </summary>
     /// <param name="slider"></param>
-    public void SetHighNoonPressSlow(ActionCommandSlider slider)
+    public void SetHighNoonPressSlow(ActionCommandSlider slider, BaseItem.BonusTypeOnActionCommand bonusTypeOnActionCommand)
     {
-        PrepareTimelyPress(TimelyPressSpeedType.HIGH_NOON_SLOW, ActionType.TIMELY_PRESS, selectRandomButton());
+        PrepareTimelyPress(TimelyPressSpeedType.HIGH_NOON_SLOW, ActionType.TIMELY_PRESS, SelectRandomButton(), bonusTypeOnActionCommand);
         PrepareSlider(slider, TimelyPressSpeedType.HIGH_NOON_SLOW);
     }
 
@@ -191,9 +191,9 @@ public class ActionCommandTimelyPress : ActionCommand
     /// Make the Timely Press last a short while before requiring a random button press.
     /// </summary>
     /// <param name="slider"></param>
-    public void SetHighNoonPressFast(ActionCommandSlider slider)
+    public void SetHighNoonPressFast(ActionCommandSlider slider, BaseItem.BonusTypeOnActionCommand bonusTypeOnActionCommand)
     {
-        PrepareTimelyPress(TimelyPressSpeedType.HIGH_NOON_QUICK, ActionType.TIMELY_PRESS, selectRandomButton());
+        PrepareTimelyPress(TimelyPressSpeedType.HIGH_NOON_QUICK, ActionType.TIMELY_PRESS, SelectRandomButton(), bonusTypeOnActionCommand);
         PrepareSlider(slider, TimelyPressSpeedType.HIGH_NOON_QUICK);
     }
 
@@ -201,13 +201,14 @@ public class ActionCommandTimelyPress : ActionCommand
     /// Prepare the Timely Press stuff.
     /// </summary>
     /// <param name="speedType"></param>
-    private void PrepareTimelyPress(TimelyPressSpeedType speedType, ActionType actionType, ActionButtonPressed buttonToPress)
+    private void PrepareTimelyPress(TimelyPressSpeedType speedType, ActionType actionType, ActionButtonPressed buttonToPress, BaseItem.BonusTypeOnActionCommand bonusTypeOnActionCommand)
     {
+        this.bonusTypeOnActionCommand = bonusTypeOnActionCommand;
         this.actionType = actionType;
+        buttonRequired = buttonToPress;
         setTimelyReadyAnim = false;
         highNoonDrawn = false;
         subType = speedType;
-        buttonRequired = buttonToPress;
     }
 
     /// <summary>
@@ -312,7 +313,7 @@ public class ActionCommandTimelyPress : ActionCommand
     /// Select a random button for Player to press.
     /// </summary>
     /// <returns></returns>
-    private ActionButtonPressed selectRandomButton()
+    private ActionButtonPressed SelectRandomButton()
     {
         Array buttons = Enum.GetValues(typeof(ActionButtonPressed));
         int value = UnityEngine.Random.Range(0, buttons.Length);

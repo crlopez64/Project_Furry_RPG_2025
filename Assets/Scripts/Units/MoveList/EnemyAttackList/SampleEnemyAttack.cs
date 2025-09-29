@@ -14,6 +14,7 @@ public class SampleEnemyAttack : MoveList
             new AttackStep[] {
                 new (ActionCommand.ActionType.NONE,
                     "N/A",
+                    BaseItem.BonusTypeOnActionCommand.NONE,
                     null /** No Buttons Required **/,
                     new Dictionary<BaseItem.StatEffectType, int>() {
                         { BaseItem.StatEffectType.POWER, 40 } },
@@ -25,6 +26,7 @@ public class SampleEnemyAttack : MoveList
             new AttackStep[] {
                 new (ActionCommand.ActionType.NONE,
                     "N/A",
+                    BaseItem.BonusTypeOnActionCommand.NONE,
                     null /** No Buttons Required **/,
                     new Dictionary<BaseItem.StatEffectType, int>() {
                         { BaseItem.StatEffectType.POWER, 12 } },
@@ -32,6 +34,7 @@ public class SampleEnemyAttack : MoveList
                     0),
                 new (ActionCommand.ActionType.NONE,
                     "N/A",
+                    BaseItem.BonusTypeOnActionCommand.NONE,
                     null /** No Buttons Required **/,
                     new Dictionary<BaseItem.StatEffectType, int>() {
                         { BaseItem.StatEffectType.POWER, 12 } },
@@ -39,6 +42,7 @@ public class SampleEnemyAttack : MoveList
                     0),
                 new (ActionCommand.ActionType.NONE,
                     "N/A",
+                    BaseItem.BonusTypeOnActionCommand.NONE,
                     null /** No Buttons Required **/,
                     new Dictionary<BaseItem.StatEffectType, int>() {
                         { BaseItem.StatEffectType.POWER, 20} },

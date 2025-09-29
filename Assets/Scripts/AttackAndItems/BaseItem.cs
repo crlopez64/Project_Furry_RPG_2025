@@ -19,9 +19,21 @@ public class BaseItem
     /// </summary>
     public enum ItemClassification : byte
     {
+        /// <summary>
+        /// Debug purposes.
+        /// </summary>
         NONE,
+        /// <summary>
+        /// BaseItem is an Attack (requires no Mana).
+        /// </summary>
         ATTACK,
+        /// <summary>
+        /// BaseItem is an Attack that requires Mana to use.
+        /// </summary>
         SKILL,
+        /// <summary>
+        /// BaseItem is an Item from Inventory.
+        /// </summary>
         ITEM
     }
 
@@ -30,11 +42,29 @@ public class BaseItem
     /// </summary>
     public enum IntendedTarget : byte
     {
+        /// <summary>
+        /// Target is user of BaseItem.
+        /// </summary>
         SELF,
+        /// <summary>
+        /// Target is 1 unit in your Team.
+        /// </summary>
         TEAM_ONE,
+        /// <summary>
+        /// Target is entire Team.
+        /// </summary>
         TEAM_ALL,
+        /// <summary>
+        /// Target is 1 Enemy.
+        /// </summary>
         ENEMY_ONE,
+        /// <summary>
+        /// Target is all Enemies.
+        /// </summary>
         ENEMY_ALL,
+        /// <summary>
+        /// Everyone, including the User, is Target.
+        /// </summary>
         EVERYONE
     }
 
@@ -51,6 +81,29 @@ public class BaseItem
         /// Unit should move to a location prior to attacking.
         /// </summary>
         MOVE_TO_TARGET
+    }
+
+    /// <summary>
+    /// The bonus type to include to a BaseItem if there's an Action Command tied to it.
+    /// </summary>
+    public enum BonusTypeOnActionCommand : byte
+    {
+        /// <summary>
+        /// There is no Bonus on this BaseItem.
+        /// </summary>
+        NONE,
+        /// <summary>
+        /// On Action Command Pass, increase Damage Output.
+        /// </summary>
+        DAMAGE_OUTPUT,
+        /// <summary>
+        /// On Action Command Pass, increase Mana Gain.
+        /// </summary>
+        MANA_GAIN,
+        /// <summary>
+        /// On Action Command Pass, increase Crit rate on attack.
+        /// </summary>
+        CRIT_INCREASE
     }
 
     /// <summary>

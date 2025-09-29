@@ -49,7 +49,7 @@ public class ActionCommandStickControl : ActionCommand
         sliderProgress += Time.deltaTime;
         if (ReachedGoal())
         {
-            actionCommandManager.ReportActionCommandPass(ActionType.STICK_CONTROL, gameObject.transform);
+            actionCommandManager.ReportActionCommandPass(gameObject.transform, bonusTypeOnActionCommand);
         }
     }
 

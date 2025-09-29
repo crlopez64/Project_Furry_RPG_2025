@@ -123,17 +123,17 @@ public class TestBattleScene : MonoBehaviour
         switch (pickRandom)
         {
             case 0:
-                actionCommandManager.PrepareRapidPress(ActionCommandRapidPress.RapidPressSelectType.SHORT, GetRandomButtonToRequire());
+                actionCommandManager.PrepareRapidPress(ActionCommandRapidPress.RapidPressSelectType.SHORT, GetRandomButtonToRequire(), BaseItem.BonusTypeOnActionCommand.NONE);
                 break;
             case 1:
-                actionCommandManager.PrepareRapidPress(ActionCommandRapidPress.RapidPressSelectType.MEDIUM, GetRandomButtonToRequire());
+                actionCommandManager.PrepareRapidPress(ActionCommandRapidPress.RapidPressSelectType.MEDIUM, GetRandomButtonToRequire(), BaseItem.BonusTypeOnActionCommand.NONE);
                 break;
             case 2:
-                actionCommandManager.PrepareRapidPress(ActionCommandRapidPress.RapidPressSelectType.LONG, GetRandomButtonToRequire());
+                actionCommandManager.PrepareRapidPress(ActionCommandRapidPress.RapidPressSelectType.LONG, GetRandomButtonToRequire(), BaseItem.BonusTypeOnActionCommand.NONE);
                 break;
             case 3:
                 //Ratio is set at 50% from Max Fill
-                actionCommandManager.PrepareRapidPress(ActionCommandRapidPress.RapidPressSelectType.CONTROL_RAGE, GetRandomButtonToRequire());
+                actionCommandManager.PrepareRapidPress(ActionCommandRapidPress.RapidPressSelectType.CONTROL_RAGE, GetRandomButtonToRequire(), BaseItem.BonusTypeOnActionCommand.NONE);
                 break;
             default:
                 break;
@@ -149,19 +149,19 @@ public class TestBattleScene : MonoBehaviour
         switch (pickRandom)
         {
             case 0:
-                actionCommandManager.PrepareTimelyPress(ActionCommandTimelyPress.TimelyPressSpeedType.SLOW, GetRandomButtonToRequire());
+                actionCommandManager.PrepareTimelyPress(ActionCommandTimelyPress.TimelyPressSpeedType.SLOW, GetRandomButtonToRequire(), BaseItem.BonusTypeOnActionCommand.NONE);
                 break;
             case 1:
-                actionCommandManager.PrepareTimelyPress(ActionCommandTimelyPress.TimelyPressSpeedType.MEDIUM, GetRandomButtonToRequire());
+                actionCommandManager.PrepareTimelyPress(ActionCommandTimelyPress.TimelyPressSpeedType.MEDIUM, GetRandomButtonToRequire(), BaseItem.BonusTypeOnActionCommand.NONE);
                 break;
             case 2:
-                actionCommandManager.PrepareTimelyPress(ActionCommandTimelyPress.TimelyPressSpeedType.QUICK, GetRandomButtonToRequire());
+                actionCommandManager.PrepareTimelyPress(ActionCommandTimelyPress.TimelyPressSpeedType.QUICK, GetRandomButtonToRequire(), BaseItem.BonusTypeOnActionCommand.NONE);
                 break;
             case 3:
-                actionCommandManager.PrepareTimelyPress(ActionCommandTimelyPress.TimelyPressSpeedType.HIGH_NOON_SLOW, GetRandomButtonToRequire());
+                actionCommandManager.PrepareTimelyPress(ActionCommandTimelyPress.TimelyPressSpeedType.HIGH_NOON_SLOW, GetRandomButtonToRequire(), BaseItem.BonusTypeOnActionCommand.NONE);
                 break;
             case 4:
-                actionCommandManager.PrepareTimelyPress(ActionCommandTimelyPress.TimelyPressSpeedType.HIGH_NOON_QUICK, GetRandomButtonToRequire());
+                actionCommandManager.PrepareTimelyPress(ActionCommandTimelyPress.TimelyPressSpeedType.HIGH_NOON_QUICK, GetRandomButtonToRequire(), BaseItem.BonusTypeOnActionCommand.NONE);
                 break;
             default:
                 break;

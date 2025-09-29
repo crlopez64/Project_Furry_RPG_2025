@@ -59,7 +59,7 @@ public class ActionCommandRapidPress : ActionCommand
         {
             if (ReachedGoal())
             {
-                actionCommandManager.ReportActionCommandPass(actionType, gameObject.transform);
+                actionCommandManager.ReportActionCommandPass(gameObject.transform, bonusTypeOnActionCommand);
                 TurnOffThisGui();
                 Debug.Log("Reached goal!!");
             }
@@ -119,7 +119,7 @@ public class ActionCommandRapidPress : ActionCommand
         {
             if (actionType == ActionType.RAPID_PRESS)
             {
-                actionCommandManager.ReportActionCommandPass(actionType, gameObject.transform);
+                actionCommandManager.ReportActionCommandPass(gameObject.transform, bonusTypeOnActionCommand);
                 TurnOffThisGui();
                 Debug.Log("Reached goal!!");
             }
@@ -148,10 +148,9 @@ public class ActionCommandRapidPress : ActionCommand
     /// Make the Rapid Press last a short while. Goal is made short.
     /// </summary>
 
-    public void SetRapidPressShort(ActionButtonPressed buttonToPress)
+    public void SetRapidPressShort(ActionButtonPressed buttonToPress, BaseItem.BonusTypeOnActionCommand bonusTypeOnActionCommand)
     {
-        Debug.Log("Set Rapid Press SHORT");
-        PrepareRapidPress(buttonToPress);
+        PrepareRapidPress(buttonToPress, bonusTypeOnActionCommand);
         actionCommandTimer = 2f;
         rapidPressGoal = 0.4f;
         subType = RapidPressSelectType.SHORT;
@@ -160,10 +159,9 @@ public class ActionCommandRapidPress : ActionCommand
     /// <summary>
     /// Make the Rapid Press last a moderate time. Goal is made medium.
     /// </summary>
-    public void SetRapidPressMedium(ActionButtonPressed buttonToPress)
+    public void SetRapidPressMedium(ActionButtonPressed buttonToPress, BaseItem.BonusTypeOnActionCommand bonusTypeOnActionCommand)
     {
-        Debug.Log("Set Rapid Press MEDIUM");
-        PrepareRapidPress(buttonToPress);
+        PrepareRapidPress(buttonToPress, bonusTypeOnActionCommand);
         actionCommandTimer = 3f;
         rapidPressGoal = 0.8f;
         subType = RapidPressSelectType.MEDIUM;
@@ -172,10 +170,9 @@ public class ActionCommandRapidPress : ActionCommand
     /// <summary>
     /// Make the Rapid Press last a while. Goal is made long time.
     /// </summary>
-    public void SetRapidPressLong(ActionButtonPressed buttonToPress)
+    public void SetRapidPressLong(ActionButtonPressed buttonToPress, BaseItem.BonusTypeOnActionCommand bonusTypeOnActionCommand)
     {
-        Debug.Log("Set Rapid Press LONG");
-        PrepareRapidPress(buttonToPress);
+        PrepareRapidPress(buttonToPress, bonusTypeOnActionCommand);
         actionCommandTimer = 5f;
         rapidPressGoal = 1.2f;
         subType = RapidPressSelectType.LONG;
@@ -188,7 +185,6 @@ public class ActionCommandRapidPress : ActionCommand
     /// <param name="acceptableHalfRange">The accepted half range near the target ratio to succeed this command (between 0 to 25).</param>
     public void SetRapidPressControlRage(float ratioTarget, int acceptableHalfRange, ActionButtonPressed buttonToPress, ActionCommandSlider slider)
     {
-        Debug.Log("Set Rapid Press CONTROL RAGE");
         degradeGoal = true;
         actionType = ActionType.RAPID_PRESS;
         subType = RapidPressSelectType.CONTROL_RAGE;
@@ -233,13 +229,14 @@ public class ActionCommandRapidPress : ActionCommand
     /// Set Rapid Press parameters and zero out progress.
     /// </summary>
     /// <param name="buttonToPress"></param>
-    private void PrepareRapidPress(ActionButtonPressed buttonToPress)
+    private void PrepareRapidPress(ActionButtonPressed buttonToPress, BaseItem.BonusTypeOnActionCommand bonusTypeOnActionCommand)
     {
-        slider = null;
-        degradeGoal = false;
+        this.bonusTypeOnActionCommand = bonusTypeOnActionCommand;
         actionType = ActionType.RAPID_PRESS;
         buttonRequired = buttonToPress;
         rapidPressProgress = 0.0f;
+        degradeGoal = false;
+        slider = null;
     }
 
     /// <summary>

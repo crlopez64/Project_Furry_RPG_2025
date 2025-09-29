@@ -98,15 +98,15 @@ public class UnitStats : MonoBehaviour
         /// </summary>
         ASLEEP,
         /// <summary>
-        /// Chance of unit attacking 1 other unit indiscrimatently for their turn. Cancelled if Unit is put ASLEEP.
+        /// Chance of unit attacking 1 other unit indiscriminately for their turn. Cancelled if Unit is put ASLEEP.
         /// </summary>
         CONFUSED,
         /// <summary>
-        /// Unit will automatically attack the Unit that enranged them (does not use skills). Cancelled if Unit is put ASLEEP.
+        /// Unit will automatically attack the Unit that enranged them (does not use Skills). Cancelled if Unit is put ASLEEP.
         /// </summary>
         ENRAGED,
         /// <summary>
-        /// Unit's skills are disabled.
+        /// Unit's Skills are disabled.
         /// </summary>
         FRIGHTENED,
         /// <summary>

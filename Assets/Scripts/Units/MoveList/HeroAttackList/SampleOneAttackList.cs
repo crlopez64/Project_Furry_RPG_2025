@@ -14,6 +14,7 @@ public class SampleOneAttackList : MoveList
             new AttackStep[] {
                 new (ActionCommand.ActionType.TIMELY_PRESS,
                     "MEDIUM",
+                    BaseItem.BonusTypeOnActionCommand.MANA_GAIN,
                     new ActionCommand.ActionButtonPressed[] {
                         ActionCommand.ActionButtonPressed.BUTTON_WEST },
                     new Dictionary<BaseItem.StatEffectType, int>() {
@@ -26,6 +27,7 @@ public class SampleOneAttackList : MoveList
             new AttackStep[] {
                 new (ActionCommand.ActionType.TIMELY_PRESS,
                     "QUICK",
+                    BaseItem.BonusTypeOnActionCommand.DAMAGE_OUTPUT,
                     ActionCommand.GetAllButtonsRequired(),
                     new Dictionary<BaseItem.StatEffectType, int>() {
                         { BaseItem.StatEffectType.POWER, 12 } },
@@ -33,6 +35,7 @@ public class SampleOneAttackList : MoveList
                     0),
                 new (ActionCommand.ActionType.TIMELY_PRESS,
                     "QUICK",
+                    BaseItem.BonusTypeOnActionCommand.DAMAGE_OUTPUT,
                     ActionCommand.GetAllButtonsRequired(),
                     new Dictionary<BaseItem.StatEffectType, int>() {
                         { BaseItem.StatEffectType.POWER, 12 } },
@@ -40,6 +43,7 @@ public class SampleOneAttackList : MoveList
                     0),
                 new (ActionCommand.ActionType.TIMELY_PRESS,
                     "QUICK",
+                    BaseItem.BonusTypeOnActionCommand.DAMAGE_OUTPUT,
                     ActionCommand.GetAllButtonsRequired(),
                     new Dictionary<BaseItem.StatEffectType, int>() {
                         { BaseItem.StatEffectType.POWER, 20} },

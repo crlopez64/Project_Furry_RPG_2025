@@ -3,12 +3,13 @@ using UnityEngine;
 public class ActionCommand : MonoBehaviour
 {
     protected ActionCommandManager actionCommandManager;
+    protected BaseItem.BonusTypeOnActionCommand bonusTypeOnActionCommand;
     protected ActionCommand nextActionCommand;
     protected ActionCommandSlider slider;
     protected Animator animator;
-    protected float actionCommandTimer = 0f;
-    protected ActionType actionType;
     protected ActionButtonPressed buttonRequired;
+    protected ActionType actionType;
+    protected float actionCommandTimer = 0f;
 
     /// <summary>
     /// The type of task the Player will do during an Attack.
