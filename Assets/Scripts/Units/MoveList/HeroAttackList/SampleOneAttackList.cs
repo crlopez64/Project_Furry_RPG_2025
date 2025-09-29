@@ -25,14 +25,14 @@ public class SampleOneAttackList : MoveList
         moveList.Add(new Attack(2, "Hash Slinging Slasher", "Three quick slashes against one Enemy.", 0, 0, BaseItem.IntendedTarget.ENEMY_ONE, UnitType.NORMAL,
             new AttackStep[] {
                 new (ActionCommand.ActionType.TIMELY_PRESS,
-                    "MEDIUM",
+                    "QUICK",
                     ActionCommand.GetAllButtonsRequired(),
                     new Dictionary<BaseItem.StatEffectType, int>() {
                         { BaseItem.StatEffectType.POWER, 12 } },
                     new Dictionary<StatusAilment, int>( /**No Status Ailments**/ ),
                     0),
                 new (ActionCommand.ActionType.TIMELY_PRESS,
-                    "MEDIUM",
+                    "QUICK",
                     ActionCommand.GetAllButtonsRequired(),
                     new Dictionary<BaseItem.StatEffectType, int>() {
                         { BaseItem.StatEffectType.POWER, 12 } },

@@ -93,7 +93,7 @@ public class ActionCommandTimelyPress : ActionCommand
         }
         if (HighNoonActionCommand())
         {
-            animator.SetInteger("ButtonSelected", 4);
+            animator.SetInteger("ButtonSelected", (int)(ActionButtonPressed.BUTTON_WEST + 1));
         }
         else
         {
@@ -133,7 +133,6 @@ public class ActionCommandTimelyPress : ActionCommand
         {
             actionCommandManager.ReportActionCommandFail(actionType, gameObject.transform);
         }
-        //TurnOffThisGui();
     }
 
     /// <summary>
@@ -143,7 +142,6 @@ public class ActionCommandTimelyPress : ActionCommand
     {
         base.WrongInputPressed();
         actionCommandManager.ReportActionCommandFail(actionType, gameObject.transform);
-        //TurnOffThisGui();
     }
 
     /// <summary>
@@ -153,7 +151,6 @@ public class ActionCommandTimelyPress : ActionCommand
     /// <param name="buttonToPress"></param>
     public void SetTimelyPressSlow(ActionCommandSlider slider, ActionButtonPressed buttonToPress)
     {
-        //Debug.Log("Prepare Timely Press SLOW");
         PrepareTimelyPress(TimelyPressSpeedType.SLOW, ActionType.TIMELY_PRESS, buttonToPress);
         PrepareSlider(slider, TimelyPressSpeedType.SLOW);
     }
@@ -165,7 +162,6 @@ public class ActionCommandTimelyPress : ActionCommand
     /// <param name="buttonToPress"></param>
     public void SetTimelyPressMedium(ActionCommandSlider slider, ActionButtonPressed buttonToPress)
     {
-        //Debug.Log("Prepare Timely Press MEDIUM");
         PrepareTimelyPress(TimelyPressSpeedType.MEDIUM, ActionType.TIMELY_PRESS, buttonToPress);
         PrepareSlider(slider, TimelyPressSpeedType.MEDIUM);
     }
@@ -177,7 +173,6 @@ public class ActionCommandTimelyPress : ActionCommand
     /// <param name="buttonToPress"></param>
     public void SetTimelyPressQuick(ActionCommandSlider slider, ActionButtonPressed buttonToPress)
     {
-        //Debug.Log("Prepare Timely Press QUICK");
         PrepareTimelyPress(TimelyPressSpeedType.QUICK, ActionType.TIMELY_PRESS, buttonToPress);
         PrepareSlider(slider, TimelyPressSpeedType.QUICK);
     }
@@ -188,7 +183,6 @@ public class ActionCommandTimelyPress : ActionCommand
     /// <param name="slider"></param>
     public void SetHighNoonPressSlow(ActionCommandSlider slider)
     {
-        //Debug.Log("Prepare High Noon Timely Press SLOW");
         PrepareTimelyPress(TimelyPressSpeedType.HIGH_NOON_SLOW, ActionType.TIMELY_PRESS, selectRandomButton());
         PrepareSlider(slider, TimelyPressSpeedType.HIGH_NOON_SLOW);
     }
@@ -199,7 +193,6 @@ public class ActionCommandTimelyPress : ActionCommand
     /// <param name="slider"></param>
     public void SetHighNoonPressFast(ActionCommandSlider slider)
     {
-        //Debug.Log("Prepare High Noon Timely Press FAST");
         PrepareTimelyPress(TimelyPressSpeedType.HIGH_NOON_QUICK, ActionType.TIMELY_PRESS, selectRandomButton());
         PrepareSlider(slider, TimelyPressSpeedType.HIGH_NOON_QUICK);
     }
@@ -245,23 +238,23 @@ public class ActionCommandTimelyPress : ActionCommand
         {
             case TimelyPressSpeedType.SLOW:
                 sliderGoal = 0.8f;
-                depleterMultiplier = 1.0f;
+                depleterMultiplier = 2.5f;
                 return;
             case TimelyPressSpeedType.MEDIUM:
-                sliderGoal = 0.6f;
-                depleterMultiplier = 2.0f;
-                return;
-            case TimelyPressSpeedType.QUICK:
                 sliderGoal = 0.8f;
                 depleterMultiplier = 3.0f;
                 return;
+            case TimelyPressSpeedType.QUICK:
+                sliderGoal = 0.8f;
+                depleterMultiplier = 4.0f;
+                return;
             case TimelyPressSpeedType.HIGH_NOON_SLOW:
                 sliderGoal = 0.8f;
-                depleterMultiplier = 1.0f;
+                depleterMultiplier = 2.5f;
                 break;
             case TimelyPressSpeedType.HIGH_NOON_QUICK:
                 sliderGoal = 0.8f;
-                depleterMultiplier = 2.0f;
+                depleterMultiplier = 3.5f;
                 return;
             default:
                 sliderGoal = 0.01f;
