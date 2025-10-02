@@ -59,7 +59,7 @@ public class ActionCommandRapidPress : ActionCommand
         {
             if (ReachedGoal())
             {
-                actionCommandManager.ReportActionCommandPass(gameObject.transform, bonusTypeOnActionCommand);
+                actionCommandManager.ReportActionCommandPass(gameObject.transform, currentAttackStep);
                 TurnOffThisGui();
                 Debug.Log("Reached goal!!");
             }
@@ -67,7 +67,7 @@ public class ActionCommandRapidPress : ActionCommand
             {
                 if (actionCommandManager.IsCurrentActionCommand(this))
                 {
-                    actionCommandManager.ReportActionCommandFail(actionType, gameObject.transform);
+                    actionCommandManager.ReportActionCommandFail(gameObject.transform, currentAttackStep);
                     TurnOffThisGui();
                     Debug.Log("FAILED ACTION COMMAND!!");
                 }
@@ -117,9 +117,9 @@ public class ActionCommandRapidPress : ActionCommand
         rapidPressProgress += (Time.deltaTime * (subType == RapidPressSelectType.CONTROL_RAGE ? 18 : 10));
         if (ReachedGoal())
         {
-            if (actionType == ActionType.RAPID_PRESS)
+            if (currentAttackStep.GetActionCommandType() == ActionType.RAPID_PRESS)
             {
-                actionCommandManager.ReportActionCommandPass(gameObject.transform, bonusTypeOnActionCommand);
+                actionCommandManager.ReportActionCommandPass(gameObject.transform, currentAttackStep);
                 TurnOffThisGui();
                 Debug.Log("Reached goal!!");
             }
@@ -148,9 +148,9 @@ public class ActionCommandRapidPress : ActionCommand
     /// Make the Rapid Press last a short while. Goal is made short.
     /// </summary>
 
-    public void SetRapidPressShort(ActionButtonPressed buttonToPress, BaseItem.BonusTypeOnActionCommand bonusTypeOnActionCommand)
+    public void SetRapidPressShort(AttackStep attackStep)
     {
-        PrepareRapidPress(buttonToPress, bonusTypeOnActionCommand);
+        PrepareRapidPress(attackStep);
         actionCommandTimer = 2f;
         rapidPressGoal = 0.4f;
         subType = RapidPressSelectType.SHORT;
@@ -159,9 +159,9 @@ public class ActionCommandRapidPress : ActionCommand
     /// <summary>
     /// Make the Rapid Press last a moderate time. Goal is made medium.
     /// </summary>
-    public void SetRapidPressMedium(ActionButtonPressed buttonToPress, BaseItem.BonusTypeOnActionCommand bonusTypeOnActionCommand)
+    public void SetRapidPressMedium(AttackStep attackStep)
     {
-        PrepareRapidPress(buttonToPress, bonusTypeOnActionCommand);
+        PrepareRapidPress(attackStep);
         actionCommandTimer = 3f;
         rapidPressGoal = 0.8f;
         subType = RapidPressSelectType.MEDIUM;
@@ -170,9 +170,9 @@ public class ActionCommandRapidPress : ActionCommand
     /// <summary>
     /// Make the Rapid Press last a while. Goal is made long time.
     /// </summary>
-    public void SetRapidPressLong(ActionButtonPressed buttonToPress, BaseItem.BonusTypeOnActionCommand bonusTypeOnActionCommand)
+    public void SetRapidPressLong(AttackStep attackStep)
     {
-        PrepareRapidPress(buttonToPress, bonusTypeOnActionCommand);
+        PrepareRapidPress(attackStep);
         actionCommandTimer = 5f;
         rapidPressGoal = 1.2f;
         subType = RapidPressSelectType.LONG;
@@ -183,12 +183,11 @@ public class ActionCommandRapidPress : ActionCommand
     /// </summary>
     /// <param name="ratioTarget">The target ratio to succeed this command (between 0.0f to 1.0f).</param>
     /// <param name="acceptableHalfRange">The accepted half range near the target ratio to succeed this command (between 0 to 25).</param>
-    public void SetRapidPressControlRage(float ratioTarget, int acceptableHalfRange, ActionButtonPressed buttonToPress, ActionCommandSlider slider)
+    public void SetRapidPressControlRage(float ratioTarget, int acceptableHalfRange, AttackStep attackStep, ActionCommandSlider slider)
     {
         degradeGoal = true;
-        actionType = ActionType.RAPID_PRESS;
         subType = RapidPressSelectType.CONTROL_RAGE;
-        buttonRequired = buttonToPress;
+        buttonRequired = attackStep.GetRequiredButton();
         rapidPressProgress = 0.0f;
         actionCommandTimer = 10f;
         rapidPressGoal = 2f; //Acts as maximum value instead
@@ -229,11 +228,11 @@ public class ActionCommandRapidPress : ActionCommand
     /// Set Rapid Press parameters and zero out progress.
     /// </summary>
     /// <param name="buttonToPress"></param>
-    private void PrepareRapidPress(ActionButtonPressed buttonToPress, BaseItem.BonusTypeOnActionCommand bonusTypeOnActionCommand)
+    private void PrepareRapidPress(AttackStep attackStep)
     {
-        this.bonusTypeOnActionCommand = bonusTypeOnActionCommand;
-        actionType = ActionType.RAPID_PRESS;
-        buttonRequired = buttonToPress;
+        bonusTypeOnActionCommand = attackStep.GetBonusTypeOnActionCommand();
+        buttonRequired = attackStep.GetRequiredButton();
+        currentAttackStep = attackStep;
         rapidPressProgress = 0.0f;
         degradeGoal = false;
         slider = null;

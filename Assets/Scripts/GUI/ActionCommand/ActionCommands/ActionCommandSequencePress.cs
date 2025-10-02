@@ -51,7 +51,7 @@ public class ActionCommandSequencePress : ActionCommand
         correctSoFar++;
         if (AllButtonsSuceeded())
         {
-            actionCommandManager.ReportActionCommandPass(gameObject.transform, bonusTypeOnActionCommand);
+            actionCommandManager.ReportActionCommandPass(gameObject.transform, currentAttackStep);
         }
     }
 

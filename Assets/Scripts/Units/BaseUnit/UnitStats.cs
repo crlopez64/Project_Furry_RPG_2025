@@ -330,6 +330,7 @@ public class UnitStats : MonoBehaviour
     /// <param name="statType"></param>
     public virtual void TakeDamage(int baseDamage, UnitStats opponentStats, StatType statType)
     {
+        Debug.Log("taking damage!!");
         currentHealth -= CalculateDamage(baseDamage, opponentStats, statType);
         if (currentHealth < 0)
         {
@@ -352,6 +353,18 @@ public class UnitStats : MonoBehaviour
         {
             currentHealth = 0;
         }
+    }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="attackAccuracy"></param>
+    /// <returns></returns>
+    public virtual bool DidAttackLand(int attackAccuracy)
+    {
+        Debug.Log("TODO: AttackLand() accuracy. Always true ATM");
+        //TODO: Accuracy on attack
+        return true;
     }
 
     /// <summary>

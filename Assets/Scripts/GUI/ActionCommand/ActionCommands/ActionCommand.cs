@@ -5,10 +5,10 @@ public class ActionCommand : MonoBehaviour
     protected ActionCommandManager actionCommandManager;
     protected BaseItem.BonusTypeOnActionCommand bonusTypeOnActionCommand;
     protected ActionCommand nextActionCommand;
+    protected AttackStep currentAttackStep;
     protected ActionCommandSlider slider;
     protected Animator animator;
     protected ActionButtonPressed buttonRequired;
-    protected ActionType actionType;
     protected float actionCommandTimer = 0f;
 
     /// <summary>
@@ -101,15 +101,6 @@ public class ActionCommand : MonoBehaviour
     }
 
     /// <summary>
-    /// Return the ActionType of this Action Command.
-    /// </summary>
-    /// <returns></returns>
-    public ActionType GetActionType()
-    {
-        return actionType;
-    }
-
-    /// <summary>
     /// Was the correct button pressed?
     /// </summary>
     /// <param name="buttonPressed"></param>
@@ -145,15 +136,6 @@ public class ActionCommand : MonoBehaviour
     {
         Debug.Log("Turning off Action Command.");
         return gameObject;
-    }
-
-    /// <summary>
-    /// Has the Action Type been set?
-    /// </summary>
-    /// <returns></returns>
-    protected bool ActionTypeSet()
-    {
-        return actionType != ActionType.NONE;
     }
 
     /// <summary>

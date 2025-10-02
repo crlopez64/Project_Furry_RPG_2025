@@ -48,6 +48,14 @@ public class UnitAttack : MonoBehaviour
     }
 
     /// <summary>
+    /// Animate getting hit.
+    /// </summary>
+    public void ActivateGettingHit()
+    {
+        animator.SetTrigger("Hit0");
+    }
+
+    /// <summary>
     /// Get the current Attack List.
     /// </summary>
     /// <returns></returns>

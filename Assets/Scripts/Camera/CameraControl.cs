@@ -108,6 +108,6 @@ public class CameraControl : MonoBehaviour
         {
             bounds.Encapsulate(enemies[i].transform.position);
         }
-        centerOfBattle = new Vector3(bounds.center.x, bounds.center.y, cameraStaticZposition);
+        centerOfBattle = new Vector3(bounds.center.x, (bounds.center.y + (2*bounds.max.y/3)), cameraStaticZposition);
     }
 }

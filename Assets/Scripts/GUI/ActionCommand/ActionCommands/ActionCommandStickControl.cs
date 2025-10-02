@@ -49,7 +49,7 @@ public class ActionCommandStickControl : ActionCommand
         sliderProgress += Time.deltaTime;
         if (ReachedGoal())
         {
-            actionCommandManager.ReportActionCommandPass(gameObject.transform, bonusTypeOnActionCommand);
+            actionCommandManager.ReportActionCommandPass(gameObject.transform, currentAttackStep);
         }
     }
 
@@ -63,7 +63,7 @@ public class ActionCommandStickControl : ActionCommand
         {
             if (holdingCorrectInput)
             {
-                actionCommandManager.ReportActionCommandFail(ActionType.STICK_CONTROL, gameObject.transform);
+                actionCommandManager.ReportActionCommandFail(gameObject.transform, currentAttackStep);
                 TurnOffThisGui();
             }
         }

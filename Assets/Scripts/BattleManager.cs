@@ -365,14 +365,13 @@ public class BattleManager : MonoBehaviour
             Debug.Log("Strikes was empty. Skipping...");
             return;
         }
-        Debug.Log("Preparing the next strike...");
         AttackStep nextStrike = strikesPrepared.Dequeue();
         ActionCommand.ActionButtonPressed getButtonRequired = nextStrike.GetRequiredButton();
         switch (nextStrike.GetActionCommandType())
         {
             case ActionCommand.ActionType.RAPID_PRESS:
                 Enum.TryParse(nextStrike.GetSubType(), out ActionCommandRapidPress.RapidPressSelectType subTypeRapidGet);
-                actionCommandManager.PrepareRapidPress(subTypeRapidGet, getButtonRequired, nextStrike.GetBonusTypeOnActionCommand());
+                actionCommandManager.PrepareRapidPress(nextStrike);
                 break;
             case ActionCommand.ActionType.SEQUENCE_PRESS:
                 //Enum.TryParse(attackStep.GetSubType(), out ActionCommandSequencePress.SequencePressType subTypeSequenceGet);
@@ -380,8 +379,7 @@ public class BattleManager : MonoBehaviour
                 Debug.LogError("ERROR: Sequence Press not yet implemented!!");
                 break;
             case ActionCommand.ActionType.TIMELY_PRESS:
-                Enum.TryParse(nextStrike.GetSubType(), out ActionCommandTimelyPress.TimelyPressSpeedType subTypeTimelyGet);
-                actionCommandManager.PrepareTimelyPress(subTypeTimelyGet, getButtonRequired, nextStrike.GetBonusTypeOnActionCommand());
+                actionCommandManager.PrepareTimelyPress(nextStrike);
                 break;
             case ActionCommand.ActionType.STICK_CONTROL:
                 Debug.LogError("ERROR: Stick Control not yet implemented!!");
@@ -513,6 +511,41 @@ public class BattleManager : MonoBehaviour
     }
 
     /// <summary>
+    /// Attack all the Targets.
+    /// </summary>
+    /// <param name="attackStep"></param>
+    public void AttackEnemies(AttackStep attackStep)
+    {
+        if (targetsToUseBaseItem == null)
+        {
+            Debug.LogError("WAIT!! No targets set!!");
+        }
+        foreach (UnitAttack unit in targetsToUseBaseItem)
+        {
+            UnitStats getStats = unit.GetComponent<UnitStats>();
+            if (getStats == null)
+            {
+                Debug.LogError("ERROR: Should have UnitStats!!");
+            }
+            if (getStats.IsDefeated())
+            {
+                //Ignore enemy is already defeated.
+                continue;
+            }
+            if (getStats.DidAttackLand(100))
+            {
+                unit.ActivateGettingHit();
+                Debug.Log("TODO: Activate hit particles");
+                getStats.TakeDamage(100, currentUnitsTurn.GetComponent<UnitStats>(), UnitStats.StatType.ATTACK_PHYSICAL);
+            }
+            else
+            {
+                Debug.LogWarning("Miss the attack!!");
+            }
+        }
+    }
+
+    /// <summary>
     /// Turn on the top dialogue for a moment.
     /// </summary>
     /// <param name="text"></param>
@@ -638,7 +671,7 @@ public class BattleManager : MonoBehaviour
     /// Execute this Unit's turn. First move to location, then activate attack.
     /// </summary>
     /// <param name="itemOrAttack"></param>
-    public void ExecuteTurn(BaseItem itemOrAttack)
+    private void ExecuteTurn(BaseItem itemOrAttack)
     {
         //Attack will be activated on Update
         ExecuteTurnMoveToLocation(itemOrAttack);
@@ -729,10 +762,6 @@ public class BattleManager : MonoBehaviour
             strikesPrepared.Enqueue(getStrikes[i]);
         }
         currentUnitsTurn.GetComponent<UnitAttack>().AnimationBeginAttack();
-        //if (PlayersTurn())
-        //{
-        //    PrepareNextActionCommand();
-        //}
     }
 
     /// <summary>
@@ -834,7 +863,7 @@ public class BattleManager : MonoBehaviour
                 }
                 break;
         }
-        if (groupGet != null)
+        if (groupGet == null)
         {
             groupGet = new UnitAttack[1];
             groupGet[0] = selectedUnit.GetComponent<UnitAttack>();
