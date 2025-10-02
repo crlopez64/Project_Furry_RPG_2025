@@ -230,7 +230,7 @@ public class BattleManager : MonoBehaviour
     /// </summary>
     public void CurrentBattleStateFinished()
     {
-        Debug.Log("There's a player that finished!!");
+        Debug.Log("There's a Unit that finished!!");
         currentBattleStateFinishedBool = true;
         currentBattleState = BattleStateForPlayer.FINISH_TURN;
         currentMenu = NavigatingMenus.NONE;
@@ -671,10 +671,10 @@ public class BattleManager : MonoBehaviour
     /// Execute this Unit's turn. First move to location, then activate attack.
     /// </summary>
     /// <param name="itemOrAttack"></param>
-    private void ExecuteTurn(BaseItem itemOrAttack)
+    private void ExecuteTurn()
     {
         //Attack will be activated on Update
-        ExecuteTurnMoveToLocation(itemOrAttack);
+        ExecuteTurnMoveToAttackLocation();
     }
 
     /// <summary>
@@ -700,28 +700,48 @@ public class BattleManager : MonoBehaviour
     }
 
     /// <summary>
-    /// Should the current Unit move prior to attacking?
+    /// Have unit return to location once done attacking.
     /// </summary>
-    /// <param name="itemOrAttack"></param>
-    private void ExecuteTurnMoveToLocation(BaseItem itemOrAttack)
+    public void ExecuteTurnMoveToReturnLocation()
     {
         if (currentUnitsTurn == null)
         {
             return;
         }
-        switch (itemOrAttack.GetWhereToMovePriorToUse())
+        switch (getBaseItemFromUnit.GetWhereToMovePriorToUse())
+        {
+            case BaseItem.WhereToMovePriorToUse.STAY_IN_PLACE:
+                CurrentBattleStateFinished();
+                break;
+            case BaseItem.WhereToMovePriorToUse.MOVE_TO_TARGET:
+                Debug.Log("Move!! Get original position");
+                break;
+        }
+    }
+
+    /// <summary>
+    /// Should the current Unit move prior to attacking?
+    /// </summary>
+    /// <param name="itemOrAttack"></param>
+    private void ExecuteTurnMoveToAttackLocation()
+    {
+        if (currentUnitsTurn == null)
+        {
+            return;
+        }
+        switch (getBaseItemFromUnit.GetWhereToMovePriorToUse())
         {
             case BaseItem.WhereToMovePriorToUse.STAY_IN_PLACE:
                 Debug.Log("Unit stay in place on Attack!!");
                 if (PlayersTurn())
                 {
                     currentBattleState = BattleStateForPlayer.PLAYER_ATTACK;
-                    ExecuteTurnPrepareAttack((Attack)itemOrAttack, targetsToUseBaseItem, true);
+                    ExecuteTurnPrepareAttack((Attack)getBaseItemFromUnit, targetsToUseBaseItem, true);
                 }
                 if (EnemysTurn())
                 {
                     currentBattleState = BattleStateForPlayer.ENEMY_ATTACK;
-                    ExecuteTurnPrepareAttack((Attack)itemOrAttack, targetsToUseBaseItem, false);
+                    ExecuteTurnPrepareAttack((Attack)getBaseItemFromUnit, targetsToUseBaseItem, false);
                 }
                 return;
             case BaseItem.WhereToMovePriorToUse.MOVE_TO_TARGET:
@@ -755,6 +775,10 @@ public class BattleManager : MonoBehaviour
     /// <param name="attack"></param>
     private void ExecuteTurnPrepareAttack(Attack attack, UnitAttack[] targetsToUseBaseItem, bool useActionCommands = false)
     {
+        if (currentUnitsTurn == null)
+        {
+            return;
+        }
         this.targetsToUseBaseItem = targetsToUseBaseItem;
         AttackStep[] getStrikes = attack.GetStrikes();
         for (int i = 0; i < getStrikes.Length; i++)
@@ -829,7 +853,7 @@ public class BattleManager : MonoBehaviour
                     itemsMenuManager.ClearOutItemsMenu();
                     targetsToUseBaseItem = SetTargetsToUseBaseItem(unitSelectorManager.GetUnitSelected(), getBaseItemFromUnit);
                     unitSelectorManager.ClearOutButtons();
-                    ExecuteTurn(getBaseItemFromUnit);
+                    ExecuteTurn();
                 }
                 return;
             default:

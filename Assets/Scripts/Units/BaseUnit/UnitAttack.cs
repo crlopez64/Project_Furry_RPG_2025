@@ -47,6 +47,11 @@ public class UnitAttack : MonoBehaviour
         animator.SetTrigger("NextAttackStep");
     }
 
+    public void ActivateReturnToOriginalPositionAfterAttack()
+    {
+        battleManager.ExecuteTurnMoveToReturnLocation();
+    }
+
     /// <summary>
     /// Animate getting hit.
     /// </summary>
