@@ -116,6 +116,19 @@ public class UnitStats : MonoBehaviour
     }
 
     /// <summary>
+    /// Set this Unit's name.
+    /// </summary>
+    /// <param name="unitName"></param>
+    public void SetUnitName(string unitName)
+    {
+        if (unitName != null)
+        {
+            return;
+        }
+        this.unitName = unitName;
+    }
+
+    /// <summary>
     /// Get this Unit's name.
     /// </summary>
     /// <returns></returns>

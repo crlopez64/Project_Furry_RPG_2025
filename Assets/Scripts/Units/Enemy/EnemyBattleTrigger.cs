@@ -17,7 +17,7 @@ public class EnemyBattleTrigger : MonoBehaviour
         if (collision.GetComponent<PlayerMove>() != null)
         {
             Debug.Log("Enter Battle now!!");
-            GameManager.AddEnemyToListToBattle(GetComponentInParent<EnemyOverworld>().enemyName);
+            GameManager.AddEnemyToListToBattle(GetComponentInParent<EnemyOverworld>().enemyName, GetComponentInParent<EnemyOverworld>().enemyAttackScriptName);
             // How to bring over enemies nearby?
             GameManager.MoveToBattleScene();
         }

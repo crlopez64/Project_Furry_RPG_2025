@@ -1,32 +1,29 @@
 using UnityEngine;
 
-/// <summary>
-/// Script in charge of Enemy Attacks.
-/// </summary>
-public class EnemyAttack : UnitAttack
+public class EnemyTestAttack : EnemyAttack
 {
     public override void Awake()
     {
         base.Awake();
+        AddEnemyMoveList();
     }
 
-    /// <summary>
-    /// Retrieve the appropriate Attack List.
-    /// </summary>
-    public virtual void AddEnemyMoveList()
+    public override void AddEnemyMoveList()
     {
         if (attackList != null)
         {
             return;
         }
-        attackList = EnemyAttackListIndex.GetEnemyAttackList("Test");
+        attackList = EnemyAttackListIndex.GetEnemyAttackList("Sample_Enemy");
     }
 
     /// <summary>
     /// Determine what attack the enemy will do next.
     /// </summary>
-    public virtual void EnemyDetermineNextAttack()
+    public override void EnemyDetermineNextAttack()
     {
         Debug.LogError("TODO!! Figure out AI to determine enemy AI on next attack to use");
+        //Get Attack Anim
+
     }
 }

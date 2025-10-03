@@ -8,14 +8,12 @@ public class EnemyStats : UnitStats
 {
     private int experienceReward;
 
-    public string setName;
     public int setExperienceReward;
 
     private void Awake()
     {
         experienceReward = setExperienceReward;
         statusAilments = new List<StatusAilment>();
-        unitName = setName;
     }
     private void Start()
     {

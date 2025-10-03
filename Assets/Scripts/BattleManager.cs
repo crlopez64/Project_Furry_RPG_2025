@@ -119,8 +119,7 @@ public class BattleManager : MonoBehaviour
         gameManager.AssignHudToHero();
 
         // Prepare Heroes and Enemies
-        List<string> getListOfEnemies = GameManager.GetEnemiesToBattle();
-        PrepareEnemies(getListOfEnemies);
+        PrepareEnemies(GameManager.GetEnemyNamesToBattle(), GameManager.GetEnemyScriptCallsToBattle());
         PrepareHeroes();
 
         // Determine Turn Order
@@ -185,9 +184,9 @@ public class BattleManager : MonoBehaviour
     /// Add enemies to Battle Manager's attention.
     /// </summary>
     /// <param name="enemies"></param>
-    public void PrepareEnemies(List<string> listOfEnemies)
+    public void PrepareEnemies(List<string>listOfEnemyNames, List<string> listOfEnemyScriptCalls)
     {
-        SpawnEnemies(listOfEnemies);
+        SpawnEnemies(listOfEnemyNames, listOfEnemyScriptCalls);
         MoveEnemiesToLocation(enemies);
     }
 
@@ -366,16 +365,13 @@ public class BattleManager : MonoBehaviour
             return;
         }
         AttackStep nextStrike = strikesPrepared.Dequeue();
-        ActionCommand.ActionButtonPressed getButtonRequired = nextStrike.GetRequiredButton();
         switch (nextStrike.GetActionCommandType())
         {
             case ActionCommand.ActionType.RAPID_PRESS:
-                Enum.TryParse(nextStrike.GetSubType(), out ActionCommandRapidPress.RapidPressSelectType subTypeRapidGet);
                 actionCommandManager.PrepareRapidPress(nextStrike);
                 break;
             case ActionCommand.ActionType.SEQUENCE_PRESS:
-                //Enum.TryParse(attackStep.GetSubType(), out ActionCommandSequencePress.SequencePressType subTypeSequenceGet);
-                //actionCommandManager.PrepareSequencePress(subTypeSequenceGet, getButtonRequired, nextStrike.GetBonusTypeOnActionCommand());
+                //actionCommandManager.PrepareSequencePress(nextStrike);
                 Debug.LogError("ERROR: Sequence Press not yet implemented!!");
                 break;
             case ActionCommand.ActionType.TIMELY_PRESS:
@@ -618,17 +614,19 @@ public class BattleManager : MonoBehaviour
     /// <summary>
     /// Spawn the enemies.
     /// </summary>
-    private void SpawnEnemies(List<string> listOfEnemies)
+    /// <param name="listOfEnemyNames"></param>
+    /// <param name="listOfEnemySciptCall"></param>
+    private void SpawnEnemies(List<string> listOfEnemyNames, List<string> listOfEnemySciptCall)
     {
-        enemies = new List<GameObject>(listOfEnemies.Count);
+        enemies = new List<GameObject>(listOfEnemySciptCall.Count);
         //Enemy Unit Holder will have EnemyStats automatically
         GameObject enemy = FindAnyObjectByType<EnemyUnitHolder>(FindObjectsInactive.Include).gameObject;
-        enemy.GetComponent<EnemyUnitHolder>().CreateEnemy(listOfEnemies[0]);
+        enemy.GetComponent<EnemyUnitHolder>().CreateEnemy(listOfEnemyNames[0], listOfEnemySciptCall[0]);
         enemies.Add(enemy);
-        for (int i = 1; i < listOfEnemies.Count; i++)
+        for (int i = 1; i < listOfEnemySciptCall.Count; i++)
         {
             GameObject getNext = Instantiate(enemy, enemy.transform.position, enemy.transform.rotation);
-            getNext.GetComponent<EnemyUnitHolder>().CreateEnemy(listOfEnemies[i]);
+            getNext.GetComponent<EnemyUnitHolder>().CreateEnemy(listOfEnemyNames[0], listOfEnemySciptCall[i]);
             enemies.Add(getNext);
         }
     }
@@ -781,9 +779,12 @@ public class BattleManager : MonoBehaviour
         }
         this.targetsToUseBaseItem = targetsToUseBaseItem;
         AttackStep[] getStrikes = attack.GetStrikes();
-        for (int i = 0; i < getStrikes.Length; i++)
+        if (useActionCommands)
         {
-            strikesPrepared.Enqueue(getStrikes[i]);
+            for (int i = 0; i < getStrikes.Length; i++)
+            {
+                strikesPrepared.Enqueue(getStrikes[i]);
+            }
         }
         currentUnitsTurn.GetComponent<UnitAttack>().AnimationBeginAttack();
     }

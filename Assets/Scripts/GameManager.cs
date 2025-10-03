@@ -9,7 +9,8 @@ using UnityEngine.SceneManagement;
 public class GameManager : MonoBehaviour
 {
     private static GameManager instance;
-    private static List<string> enemiesToBattle;
+    private static List<string> enemyNamesToBattle;
+    private static List<string> enemyScriptCallsToBattle;
     
     private ItemsMenuManager itemMenuManager;
     private HudHeroManager hudHeroManager;
@@ -47,7 +48,8 @@ public class GameManager : MonoBehaviour
     {
         MakeInstance();
         currentGameState = GameState.OVERWORLD;
-        enemiesToBattle = new List<string>(6);
+        enemyNamesToBattle = new List<string>(6);
+        enemyScriptCallsToBattle = new List<string>(6);
 
         //Player and Hero Stuff
         SetPriorityInLine(heroes);
@@ -80,7 +82,8 @@ public class GameManager : MonoBehaviour
     public static void MoveToOverworld()
     {
         Debug.Log("Move to Overworld");
-        enemiesToBattle.Clear();
+        enemyNamesToBattle.Clear();
+        enemyScriptCallsToBattle.Clear();
         SceneManager.LoadScene("Test_Main");
         //TODO: Record player position
     }
@@ -89,14 +92,28 @@ public class GameManager : MonoBehaviour
     /// Add the Enemy Name to eventually index in Battle Manager when scenes transition to Battle.
     /// </summary>
     /// <param name="enemyName"></param>
-    public static void AddEnemyToListToBattle(string enemyName)
+    public static void AddEnemyToListToBattle(string enemyName, string enemyScriptCall)
     {
-        enemiesToBattle.Add(enemyName);
+        enemyNamesToBattle.Add(enemyName);
+        enemyScriptCallsToBattle.Add(enemyScriptCall);
     }
 
-    public static List<string> GetEnemiesToBattle()
+    /// <summary>
+    /// Return the list of front-end names to show on screen.
+    /// </summary>
+    /// <returns></returns>
+    public static List<string> GetEnemyNamesToBattle()
     {
-        return enemiesToBattle;
+        return enemyNamesToBattle;
+    }
+
+    /// <summary>
+    /// Return the list of enemy script calls to battle to allocate their respective EnemyAttack components.
+    /// </summary>
+    /// <returns></returns>
+    public static List<string> GetEnemyScriptCallsToBattle()
+    {
+        return enemyScriptCallsToBattle;
     }
 
     /// <summary>

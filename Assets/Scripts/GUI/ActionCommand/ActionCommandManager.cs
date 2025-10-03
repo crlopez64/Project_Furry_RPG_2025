@@ -135,8 +135,8 @@ public class ActionCommandManager : MonoBehaviour
     /// <summary>
     /// Let Action Command report back that Player failed task.
     /// </summary>
-    /// <param name="actionType"></param>
     /// <param name="transform"></param>
+    /// <param name="attackStep"></param>
     public void ReportActionCommandFail(Transform transform, AttackStep attackStep)
     {
         actionCommandResult.gameObject.transform.position = transform.position;

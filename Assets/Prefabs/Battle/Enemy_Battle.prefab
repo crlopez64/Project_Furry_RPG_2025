@@ -14,7 +14,6 @@ GameObject:
   - component: {fileID: 5837306947736927618}
   - component: {fileID: 938605896468871882}
   - component: {fileID: 1058320705452017840}
-  - component: {fileID: 5359511702011562490}
   - component: {fileID: 658992835090407779}
   m_Layer: 11
   m_Name: Enemy_Battle
@@ -171,18 +170,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::EnemyStats
   setName: Test
   setExperienceReward: 46
---- !u!114 &5359511702011562490
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6040119920953390938}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3714536511950ff42af64772676853fb, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::EnemyAttack
 --- !u!114 &658992835090407779
 MonoBehaviour:
   m_ObjectHideFlags: 0
