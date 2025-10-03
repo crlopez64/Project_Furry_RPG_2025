@@ -11,6 +11,7 @@ public class UnitAttack : MonoBehaviour
     protected UnitStats unitStats;
     protected MoveList attackList;
     protected MoveList skillsList;
+    protected Vector3 originalPosition;
 
     public virtual void Awake()
     {
@@ -58,6 +59,38 @@ public class UnitAttack : MonoBehaviour
     public void ActivateGettingHit()
     {
         animator.SetTrigger("Hit0");
+    }
+
+    /// <summary>
+    /// Return the original position this Unit was at prior to moving.
+    /// </summary>
+    /// <returns></returns>
+    public Vector3 GetOriginalPosition()
+    {
+        return originalPosition;
+    }
+
+    /// <summary>
+    /// Set this Unit's new original position to rest at.
+    /// Chance to add difference between old Original Position and new Original Position.
+    /// </summary>
+    /// <param name="newOrigionalPosition"></param>
+    public void SetNewOrigionalPosition(Vector3 newOrigionalPosition)
+    {
+        if (newOrigionalPosition == null)
+        {
+            originalPosition = newOrigionalPosition;
+            return;
+        }
+        Vector3 difference = newOrigionalPosition - originalPosition;
+        int getRandom = Random.Range(0, 10);
+        if (getRandom < 4)
+        {
+            newOrigionalPosition = new Vector3(Random.Range(originalPosition.x, newOrigionalPosition.x),
+                Random.Range(originalPosition.y, newOrigionalPosition.y),
+                newOrigionalPosition.z);
+        }
+        originalPosition = newOrigionalPosition;
     }
 
     /// <summary>

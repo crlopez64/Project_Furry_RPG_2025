@@ -19,7 +19,7 @@ public class Attack : BaseItem
         IntendedTarget target, UnitStats.UnitType attackType, AttackStep[] strikes)
         : base(animationID, name, description, target)
     {
-        whereToMovePriorToUse = WhereToMovePriorToUse.STAY_IN_PLACE;
+        whereToMovePriorToUse = WhereToMovePriorToUse.MOVE_TO_TARGET;
         classification = ItemClassification.ATTACK;
         this.attackType = attackType;
         this.requiredLevel = requiredLevel;
@@ -31,7 +31,7 @@ public class Attack : BaseItem
         IntendedTarget target, UnitStats.UnitType attackType, AttackStep[] strikes)
         : base(animationID, name, description, target)
     {
-        whereToMovePriorToUse = WhereToMovePriorToUse.STAY_IN_PLACE;
+        whereToMovePriorToUse = WhereToMovePriorToUse.MOVE_TO_TARGET;
         this.classification = classification;
         this.attackType = attackType;
         this.requiredLevel = requiredLevel;

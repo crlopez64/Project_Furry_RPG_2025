@@ -9,19 +9,21 @@ using UnityEngine.Windows;
 /// </summary>
 public class UnitMove : MonoBehaviour
 {
+    private BattleManager battleManager;
     protected Transform toFollow;
     protected Animator animator;
     protected Rigidbody2D rb2D;
+    protected StateForBattleManager stateForBattleManager;
     protected FollowFrequency followFrequency;
     protected Direction facingDirection;
     protected Vector3[] pathToFollow;
     protected Vector2 inputVelocity;
     protected Vector2 destination;
+    protected int pathTargetIndex;
     protected readonly float overworldPartySpeed = 4f;
     protected readonly float battleMoveSpeed = 10f;
     protected readonly float inputSpeed = 5f;
     protected float autoMoveSpeed = 10f;
-    protected int pathTargetIndex;
 
     /// <summary>
     /// The 8-way direction. Ordered in such a way that Player Input can easily take this in.
@@ -41,11 +43,30 @@ public class UnitMove : MonoBehaviour
     /// <summary>
     /// How unit should move? Movement only via UserInput (also ties with zero move); move directly toward a target; move via pathway
     /// </summary>
-    public enum FollowFrequency
+    public enum FollowFrequency : byte
+    {
+        /// <summary>
+        /// Do not move; Move directly with User Input.
+        /// </summary>
+        NONE,
+        /// <summary>
+        /// Move in a linear path directly toward a position.
+        /// </summary>
+        DIRECT,
+        /// <summary>
+        /// Follow a set path via a pathfinder.
+        /// </summary>
+        PATHFINDER
+    }
+
+    /// <summary>
+    /// What should BattleManager do when Unit arrives to its destination?
+    /// </summary>
+    public enum StateForBattleManager : byte
     {
         NONE,
-        DIRECT,
-        PATHFINDER
+        ATTACK,
+        END_TURN
     }
 
     public virtual void Awake()
@@ -76,7 +97,27 @@ public class UnitMove : MonoBehaviour
                 facingDirection = (Direction)GetEightSectionVector(getMoveTowards);
                 if (Vector3.Distance(transform.position, destination) < 0.01)
                 {
+                    Debug.Log("Reached destination!");
                     followFrequency = FollowFrequency.NONE;
+                    if (battleManager == null)
+                    {
+                        break;
+                    }
+                    else
+                    {
+                        switch(stateForBattleManager)
+                        {
+                            case StateForBattleManager.NONE:
+                                break;
+                            case StateForBattleManager.ATTACK:
+                                battleManager.ExecuteTurnPrepareAttack();
+                                break;
+                            case StateForBattleManager.END_TURN:
+                                battleManager.EndCurrentTurn();
+                                break;
+                        }
+                    }
+                    
                 }
                 break;
             case FollowFrequency.PATHFINDER:
@@ -172,9 +213,11 @@ public class UnitMove : MonoBehaviour
     /// <summary>
     /// Move the unit directly toward a position.
     /// </summary>
-    public void MoveUnitDirectlyToLocation(Vector2 destination)
+    public void MoveUnitDirectlyToLocation(Vector2 destination, BattleManager battleManager, StateForBattleManager stateForBattleManager)
     {
         this.destination = destination;
+        this.battleManager = battleManager;
+        this.stateForBattleManager = stateForBattleManager;
         followFrequency = FollowFrequency.DIRECT;
     }
 

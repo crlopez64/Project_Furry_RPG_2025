@@ -200,7 +200,7 @@ public class BattleManager : MonoBehaviour
             return;
         }
         Debug.LogWarning("BEGIN RPG BATTLE SEQUENCE!!!!");
-        CurrentBattleStateFinished();
+        EndCurrentTurn();
     }
 
     /// <summary>
@@ -222,28 +222,6 @@ public class BattleManager : MonoBehaviour
     {
         currentMenu = NavigatingMenus.NONE;
         mainBattleMenu.gameObject.SetActive(false);
-    }
-
-    /// <summary>
-    /// Set currentBattleStateFinished to true. If finishing Hero's turn, turn off their HUD saying it's their turn.
-    /// </summary>
-    public void CurrentBattleStateFinished()
-    {
-        Debug.Log("There's a Unit that finished!!");
-        currentBattleStateFinishedBool = true;
-        currentBattleState = BattleStateForPlayer.FINISH_TURN;
-        currentMenu = NavigatingMenus.NONE;
-        targetsToUseBaseItem = null;
-        if (currentUnitsTurn == null)
-        {
-            return;
-        }
-        // Turn off the "NOW!" HUD Plate
-        if (currentUnitsTurn.GetComponent<HeroStats>() != null)
-        {
-            currentUnitsTurn.GetComponent<HeroStats>().NoLongerHerosTurn();
-        }
-        unitCurrentSignal.ResetSignalToCharacter();
     }
 
     /// <summary>
@@ -339,6 +317,28 @@ public class BattleManager : MonoBehaviour
         currentUnitsTurn.GetComponent<HeroStats>().ThisHerosTurn();
         OpenMainBattleMenu();
         TurnOnHudNarratorWithTimer("What will " + currentUnitsTurn.GetComponent<UnitStats>().GetUnitName() + " do?");
+    }
+
+    /// <summary>
+    /// Set currentBattleStateFinished to true. If finishing Hero's turn, turn off their HUD saying it's their turn.
+    /// </summary>
+    public void EndCurrentTurn()
+    {
+        Debug.Log("There's a Unit that finished!!");
+        currentBattleStateFinishedBool = true;
+        currentBattleState = BattleStateForPlayer.FINISH_TURN;
+        currentMenu = NavigatingMenus.NONE;
+        targetsToUseBaseItem = null;
+        if (currentUnitsTurn == null)
+        {
+            return;
+        }
+        // Turn off the "NOW!" HUD Plate
+        if (currentUnitsTurn.GetComponent<HeroStats>() != null)
+        {
+            currentUnitsTurn.GetComponent<HeroStats>().NoLongerHerosTurn();
+        }
+        unitCurrentSignal.ResetSignalToCharacter();
     }
 
     /// <summary>
@@ -644,7 +644,9 @@ public class BattleManager : MonoBehaviour
             Vector3 basePosition = new Vector3(-5f, yBasePosition);
             float xPosition = UnityEngine.Random.Range(basePosition.x - 2f, basePosition.x + 2f);
             float yPosition = UnityEngine.Random.Range(basePosition.y - 1f, basePosition.y + 1f);
-            heroes[i].transform.position = new Vector3(xPosition, yPosition);
+            Vector3 newPosition = new Vector3(xPosition, yPosition);
+            heroes[i].transform.position = newPosition;
+            heroes[i].GetComponent<HeroAttack>().SetNewOrigionalPosition(newPosition);
         }
     }
 
@@ -661,7 +663,9 @@ public class BattleManager : MonoBehaviour
             Vector3 basePosition = new Vector3(5f, yBasePosition);
             float xPosition = UnityEngine.Random.Range(basePosition.x - 2f, basePosition.x + 2f);
             float yPosition = UnityEngine.Random.Range(basePosition.y - 1f, basePosition.y + 1f);
-            enemies[i].transform.position = new Vector3(xPosition, yPosition);
+            Vector3 newPosition = new Vector3(xPosition, yPosition);
+            enemies[i].transform.position = newPosition;
+            enemies[i].GetComponent<EnemyAttack>().SetNewOrigionalPosition(newPosition);
         }
     }
 
@@ -709,11 +713,39 @@ public class BattleManager : MonoBehaviour
         switch (getBaseItemFromUnit.GetWhereToMovePriorToUse())
         {
             case BaseItem.WhereToMovePriorToUse.STAY_IN_PLACE:
-                CurrentBattleStateFinished();
+                GetNextTurn();
                 break;
             case BaseItem.WhereToMovePriorToUse.MOVE_TO_TARGET:
                 Debug.Log("Move!! Get original position");
+                if (PlayersTurn())
+                {
+                    currentBattleState = BattleStateForPlayer.PLAYER_MOVING_BACK_TO_BASE;
+                }
+                if (EnemysTurn())
+                {
+                    currentBattleState = BattleStateForPlayer.ENEMY_MOVING_BACK_TO_BASE;
+                }
+                UnitAttack getAttack = currentUnitsTurn.GetComponent<UnitAttack>();
+                getAttack.SetNewOrigionalPosition(transform.position);
+                currentUnitsTurn.GetComponent<UnitMove>().MoveUnitDirectlyToLocation(getAttack.GetOriginalPosition(), this, UnitMove.StateForBattleManager.END_TURN);
                 break;
+        }
+    }
+
+    /// <summary>
+    /// Execute Attack.
+    /// </summary>
+    public void ExecuteTurnPrepareAttack()
+    {
+        if (PlayersTurn())
+        {
+            currentBattleState = BattleStateForPlayer.PLAYER_ATTACK;
+            ExecuteTurnPrepareAttack((Attack)getBaseItemFromUnit, targetsToUseBaseItem, true);
+        }
+        if (EnemysTurn())
+        {
+            currentBattleState = BattleStateForPlayer.ENEMY_ATTACK;
+            ExecuteTurnPrepareAttack((Attack)getBaseItemFromUnit, targetsToUseBaseItem, false);
         }
     }
 
@@ -754,20 +786,20 @@ public class BattleManager : MonoBehaviour
                 {
                     Debug.Log("Player to move to location!!");
                     currentBattleState = BattleStateForPlayer.PLAYER_MOVING_TO_TARGET;
-                    currentUnitsTurn.GetComponent<UnitMove>().MoveUnitDirectlyToLocation(boundsOfTargets.center + (Vector3.left * 2));
+                    currentUnitsTurn.GetComponent<UnitMove>().MoveUnitDirectlyToLocation(boundsOfTargets.center + (Vector3.left * 2), this, UnitMove.StateForBattleManager.ATTACK);
                 }
                 if (EnemysTurn())
                 {
                     Debug.Log("Enemy to move to location!!");
                     currentBattleState = BattleStateForPlayer.ENEMY_MOVING_TO_TARGET;
-                    currentUnitsTurn.GetComponent<UnitMove>().MoveUnitDirectlyToLocation(boundsOfTargets.center + (Vector3.right * 2));
+                    currentUnitsTurn.GetComponent<UnitMove>().MoveUnitDirectlyToLocation(boundsOfTargets.center + (Vector3.right * 2), this, UnitMove.StateForBattleManager.ATTACK);
                 }
                 return;
         }
     }
 
     /// <summary>
-    /// Load up all Action Commands in the order the Attack was instantiated via Script from an Attack.
+    /// Load up all Attack Steps and Action Commands in the order the Attack was instantiated via Script from an Attack.
     /// Should not be directly called.
     /// </summary>
     /// <param name="attack"></param>
@@ -788,6 +820,7 @@ public class BattleManager : MonoBehaviour
         }
         currentUnitsTurn.GetComponent<UnitAttack>().AnimationBeginAttack();
     }
+    
 
     /// <summary>
     /// Determine which menu to select.
