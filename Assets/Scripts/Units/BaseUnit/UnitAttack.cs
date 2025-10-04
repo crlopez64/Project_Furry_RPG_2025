@@ -77,12 +77,11 @@ public class UnitAttack : MonoBehaviour
     /// <param name="newOrigionalPosition"></param>
     public void SetNewOrigionalPosition(Vector3 newOrigionalPosition)
     {
-        if (newOrigionalPosition == null)
+        if (originalPosition == null)
         {
             originalPosition = newOrigionalPosition;
             return;
         }
-        Vector3 difference = newOrigionalPosition - originalPosition;
         int getRandom = Random.Range(0, 10);
         if (getRandom < 4)
         {

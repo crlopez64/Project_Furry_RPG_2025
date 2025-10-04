@@ -174,10 +174,9 @@ public class BattleManager : MonoBehaviour
     /// <summary>
     /// Add Heroes to Battle Manager's attention.
     /// </summary>
-    /// <param name="heroes"></param>
     public void PrepareHeroes()
     {
-        MoveHeroesToLocation(heroes);
+        SpawnHeroesToLocation(heroes);
     }
 
     /// <summary>
@@ -187,7 +186,7 @@ public class BattleManager : MonoBehaviour
     public void PrepareEnemies(List<string>listOfEnemyNames, List<string> listOfEnemyScriptCalls)
     {
         SpawnEnemies(listOfEnemyNames, listOfEnemyScriptCalls);
-        MoveEnemiesToLocation(enemies);
+        SpawnEnemiesToLocation(enemies);
     }
 
     /// <summary>
@@ -635,7 +634,7 @@ public class BattleManager : MonoBehaviour
     /// Spawn the heroes to its region.
     /// </summary>
     /// <param name="heroes"></param>
-    private void MoveHeroesToLocation(List<GameObject> heroes)
+    private void SpawnHeroesToLocation(List<GameObject> heroes)
     {
         float yBasePosition = 5f;
         for (int i = 0; i < heroes.Count; i++)
@@ -646,7 +645,7 @@ public class BattleManager : MonoBehaviour
             float yPosition = UnityEngine.Random.Range(basePosition.y - 1f, basePosition.y + 1f);
             Vector3 newPosition = new Vector3(xPosition, yPosition);
             heroes[i].transform.position = newPosition;
-            heroes[i].GetComponent<HeroAttack>().SetNewOrigionalPosition(newPosition);
+            heroes[i].GetComponent<HeroAttack>().SetNewOrigionalPosition(heroes[i].transform.position);
         }
     }
 
@@ -654,7 +653,7 @@ public class BattleManager : MonoBehaviour
     /// Spawn the enemies to its region.
     /// </summary>
     /// <param name="enemies"></param>
-    private void MoveEnemiesToLocation(List<GameObject> enemies)
+    private void SpawnEnemiesToLocation(List<GameObject> enemies)
     {
         float yBasePosition = 5f;
         for (int i = 0; i < enemies.Count; i++)
@@ -665,14 +664,13 @@ public class BattleManager : MonoBehaviour
             float yPosition = UnityEngine.Random.Range(basePosition.y - 1f, basePosition.y + 1f);
             Vector3 newPosition = new Vector3(xPosition, yPosition);
             enemies[i].transform.position = newPosition;
-            enemies[i].GetComponent<EnemyAttack>().SetNewOrigionalPosition(newPosition);
+            enemies[i].GetComponent<EnemyAttack>().SetNewOrigionalPosition(enemies[i].transform.position);
         }
     }
 
     /// <summary>
     /// Execute this Unit's turn. First move to location, then activate attack.
     /// </summary>
-    /// <param name="itemOrAttack"></param>
     private void ExecuteTurn()
     {
         //Attack will be activated on Update
@@ -716,7 +714,6 @@ public class BattleManager : MonoBehaviour
                 GetNextTurn();
                 break;
             case BaseItem.WhereToMovePriorToUse.MOVE_TO_TARGET:
-                Debug.Log("Move!! Get original position");
                 if (PlayersTurn())
                 {
                     currentBattleState = BattleStateForPlayer.PLAYER_MOVING_BACK_TO_BASE;
@@ -726,7 +723,7 @@ public class BattleManager : MonoBehaviour
                     currentBattleState = BattleStateForPlayer.ENEMY_MOVING_BACK_TO_BASE;
                 }
                 UnitAttack getAttack = currentUnitsTurn.GetComponent<UnitAttack>();
-                getAttack.SetNewOrigionalPosition(transform.position);
+                getAttack.SetNewOrigionalPosition(currentUnitsTurn.transform.position);
                 currentUnitsTurn.GetComponent<UnitMove>().MoveUnitDirectlyToLocation(getAttack.GetOriginalPosition(), this, UnitMove.StateForBattleManager.END_TURN);
                 break;
         }
@@ -762,7 +759,6 @@ public class BattleManager : MonoBehaviour
         switch (getBaseItemFromUnit.GetWhereToMovePriorToUse())
         {
             case BaseItem.WhereToMovePriorToUse.STAY_IN_PLACE:
-                Debug.Log("Unit stay in place on Attack!!");
                 if (PlayersTurn())
                 {
                     currentBattleState = BattleStateForPlayer.PLAYER_ATTACK;
@@ -775,7 +771,6 @@ public class BattleManager : MonoBehaviour
                 }
                 return;
             case BaseItem.WhereToMovePriorToUse.MOVE_TO_TARGET:
-                Debug.Log("Unit moves prior to Attack!!");
                 // Get Final position to move to
                 Bounds boundsOfTargets = new Bounds();
                 foreach (UnitAttack target in targetsToUseBaseItem)
@@ -784,13 +779,11 @@ public class BattleManager : MonoBehaviour
                 }
                 if (PlayersTurn())
                 {
-                    Debug.Log("Player to move to location!!");
                     currentBattleState = BattleStateForPlayer.PLAYER_MOVING_TO_TARGET;
                     currentUnitsTurn.GetComponent<UnitMove>().MoveUnitDirectlyToLocation(boundsOfTargets.center + (Vector3.left * 2), this, UnitMove.StateForBattleManager.ATTACK);
                 }
                 if (EnemysTurn())
                 {
-                    Debug.Log("Enemy to move to location!!");
                     currentBattleState = BattleStateForPlayer.ENEMY_MOVING_TO_TARGET;
                     currentUnitsTurn.GetComponent<UnitMove>().MoveUnitDirectlyToLocation(boundsOfTargets.center + (Vector3.right * 2), this, UnitMove.StateForBattleManager.ATTACK);
                 }
