@@ -9,9 +9,10 @@ using UnityEngine.SceneManagement;
 public class GameManager : MonoBehaviour
 {
     private static GameManager instance;
-    private static List<string> enemyNamesToBattle;
     private static List<string> enemyScriptCallsToBattle;
-    
+    private static List<string> enemyNamesToBattle;
+    private List<HeroStatsStorage> heroesInParty;
+
     private ItemsMenuManager itemMenuManager;
     private HudHeroManager hudHeroManager;
     private BattleManager battleManager;
@@ -42,12 +43,11 @@ public class GameManager : MonoBehaviour
         BATTLE
     }
 
-
-
     private void Awake()
     {
         MakeInstance();
         currentGameState = GameState.OVERWORLD;
+        heroesInParty = new List<HeroStatsStorage>(4);
         enemyNamesToBattle = new List<string>(6);
         enemyScriptCallsToBattle = new List<string>(6);
 
@@ -66,6 +66,13 @@ public class GameManager : MonoBehaviour
         if (hudHeroManager != null)
         {
             AssignHudToHero();
+        }
+        foreach (GameObject hero in heroes)
+        {
+            if (hero.activeInHierarchy)
+            {
+                AddPartyMember(hero.GetComponent<HeroStats>());
+            }
         }
     }
 
@@ -114,6 +121,44 @@ public class GameManager : MonoBehaviour
     public static List<string> GetEnemyScriptCallsToBattle()
     {
         return enemyScriptCallsToBattle;
+    }
+
+    /// <summary>
+    /// Set a Party Member in the GameManager's set.
+    /// </summary>
+    /// <param name="hero"></param>
+    public void AddPartyMember(HeroStats hero)
+    {
+        if (heroesInParty == null)
+        {
+            heroesInParty = new List<HeroStatsStorage>(4);
+        }
+        heroesInParty.Add(new HeroStatsStorage(hero));
+    }
+
+    /// <summary>
+    /// Remove a Party Member from the GameManager's set.
+    /// </summary>
+    /// <param name="hero"></param>
+    public bool RemovePartyMember(string heroName)
+    {
+        if (heroesInParty == null)
+        {
+            return false;
+        }
+        if (heroesInParty.Count == 1)
+        {
+            return false;
+        }
+        foreach(HeroStatsStorage hero in heroesInParty)
+        {
+            if (hero.GetUnitName().Equals(heroName))
+            {
+                heroesInParty.Remove(hero);
+                return true;
+            }
+        }
+        return false;
     }
 
     /// <summary>
@@ -222,6 +267,15 @@ public class GameManager : MonoBehaviour
     /// </summary>
     public void AssignHudToHero()
     {
+        AssignHudToHero(heroes);
+    }
+
+    /// <summary>
+    /// Assign Hud to a specified group of heroes.
+    /// </summary>
+    /// <param name="heroes"></param>
+    public void AssignHudToHero(List<GameObject> heroes)
+    {
         if (hudHeroManager == null)
         {
             Debug.LogError("Could not find HudHeroManager");
@@ -238,17 +292,11 @@ public class GameManager : MonoBehaviour
     }
 
     /// <summary>
-    /// Find and return a list All Heroes in the scene.
+    /// Return a list of Hero data.
     /// </summary>
-    public List<GameObject> FindHeroes()
+    public List<HeroStatsStorage> GetHeroesData()
     {
-        HeroStats[] getHeroes = FindObjectsByType<HeroStats>(FindObjectsSortMode.None);
-        heroes = new List<GameObject>(getHeroes.Length);
-        for(int i = 0; i < getHeroes.Length; i++)
-        {
-            heroes.Add(getHeroes[i].gameObject);
-        }
-        return heroes;
+        return heroesInParty;
     }
 
     /// <summary>

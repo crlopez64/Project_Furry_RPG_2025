@@ -106,7 +106,7 @@ public class UnitMove : MonoBehaviour
                     else
                     {
                         switch(stateForBattleManager)
-                        {
+                        {  
                             case StateForBattleManager.NONE:
                                 break;
                             case StateForBattleManager.ATTACK:

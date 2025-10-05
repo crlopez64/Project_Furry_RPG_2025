@@ -95,7 +95,6 @@ public class ActionCommandSlider : MonoBehaviour
     /// </summary>
     private void AllocateGuiComponents()
     {
-        Debug.Log("Allocating Slider GUI");
         slider = GetComponent<Slider>();
         sliderFill = GetComponentInChildren<ActionCommandSliderFill>(true);
         sliderBackground = GetComponentInChildren<ActionCommandSliderBackground>(true);

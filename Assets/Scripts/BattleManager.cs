@@ -114,13 +114,9 @@ public class BattleManager : MonoBehaviour
         CloseMainBattleMenu();
         unwalkableMask = LayerMask.GetMask("InfrastructureAndWalls");
 
-        // Heroes and HUD Allocate
-        heroes = gameManager.FindHeroes();
-        gameManager.AssignHudToHero();
-
         // Prepare Heroes and Enemies
         PrepareEnemies(GameManager.GetEnemyNamesToBattle(), GameManager.GetEnemyScriptCallsToBattle());
-        PrepareHeroes();
+        PrepareHeroes(gameManager.GetHeroesData());
 
         // Determine Turn Order
         DetermineTurnOrder(heroes, enemies); //TODO: Add surprise attacks?
@@ -174,8 +170,22 @@ public class BattleManager : MonoBehaviour
     /// <summary>
     /// Add Heroes to Battle Manager's attention.
     /// </summary>
-    public void PrepareHeroes()
+    public void PrepareHeroes(List<HeroStatsStorage> heroStatsStorage)
     {
+        // Allocate GameObjects count to heroStatsStorage
+        heroes = new List<GameObject>(4);
+        HeroStats findHeroStats = FindAnyObjectByType<HeroStats>();
+        for(int i = 0; i < heroStatsStorage.Count; i++)
+        {
+            if (i == 0)
+            {
+                heroes.Add(findHeroStats.gameObject);
+                continue;
+            }
+            GameObject getCopy = GameObject.Instantiate(heroes[0].gameObject, heroes[0].transform.position, heroes[0].transform.rotation);
+            heroes.Add(getCopy);
+        }
+        // Spawn Heroes
         SpawnHeroesToLocation(heroes);
     }
 
@@ -323,7 +333,6 @@ public class BattleManager : MonoBehaviour
     /// </summary>
     public void EndCurrentTurn()
     {
-        Debug.Log("There's a Unit that finished!!");
         currentBattleStateFinishedBool = true;
         currentBattleState = BattleStateForPlayer.FINISH_TURN;
         currentMenu = NavigatingMenus.NONE;
@@ -647,6 +656,7 @@ public class BattleManager : MonoBehaviour
             heroes[i].transform.position = newPosition;
             heroes[i].GetComponent<HeroAttack>().SetNewOrigionalPosition(heroes[i].transform.position);
         }
+        gameManager.AssignHudToHero(heroes);
     }
 
     /// <summary>
