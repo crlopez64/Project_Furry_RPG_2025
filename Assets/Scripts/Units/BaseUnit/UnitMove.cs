@@ -136,7 +136,7 @@ public class UnitMove : MonoBehaviour
                     }
                     break;
                 }
-                Move(Vector2.zero, MoveSpeed.BATTLE_SPEED, false);
+                Move(destination - (Vector2)transform.position, MoveSpeed.BATTLE_SPEED, false);
                 break;
             case FollowFrequency.PATHFINDER_IDLE:
                 Move(Vector2.zero, MoveSpeed.OVERWORLD, true);
@@ -257,6 +257,7 @@ public class UnitMove : MonoBehaviour
     /// <param name="stateForBattleManager"></param>
     public void MoveUnitDirectlyToLocation(Vector2 destination, BattleManager battleManager, StateForBattleManager stateForBattleManager)
     {
+        Debug.Log("Apparent destination: " + destination);
         this.destination = destination;
         this.battleManager = battleManager;
         this.stateForBattleManager = stateForBattleManager;

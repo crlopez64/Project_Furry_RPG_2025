@@ -506,9 +506,8 @@ public class BattleManager : MonoBehaviour
     /// <summary>
     /// Load up all Action Commands in the order the Attack was instantiated via Script from a Skill.
     /// </summary>
-    /// <param name="attack"></param>
-    /// <param name="targetsToAttack"></param>
-    /// <param name="useActionCommands"></param>
+    /// <param name="item"></param>
+    /// <param name="targetsToUseBaseItem"></param>
     public void PrepareItem(Item item, UnitAttack[] targetsToUseBaseItem)
     {
         this.targetsToUseBaseItem = targetsToUseBaseItem;
@@ -747,6 +746,7 @@ public class BattleManager : MonoBehaviour
     {
         if (PlayersTurn())
         {
+            Debug.Log("Player prepare attack!!");
             currentBattleState = BattleStateForPlayer.PLAYER_ATTACK;
             ExecuteTurnPrepareAttack((Attack)getBaseItemFromUnit, targetsToUseBaseItem, true);
         }
@@ -809,6 +809,7 @@ public class BattleManager : MonoBehaviour
     /// <param name="attack"></param>
     private void ExecuteTurnPrepareAttack(Attack attack, UnitAttack[] targetsToUseBaseItem, bool useActionCommands = false)
     {
+        Debug.Log("Executing prepare attack with parameters");
         if (currentUnitsTurn == null)
         {
             return;
@@ -823,6 +824,7 @@ public class BattleManager : MonoBehaviour
             }
         }
         currentUnitsTurn.GetComponent<UnitAttack>().AnimationBeginAttack();
+        Debug.Log("end of prepare attack method call");
     }
     
 
@@ -879,7 +881,6 @@ public class BattleManager : MonoBehaviour
                 }
                 return;
             case NavigatingMenus.SELECT_TARGET:
-                Debug.Log("Selecting target!!");
                 //TODO: Check if when selecting with same button as current menu, if pressing other buttons as "BACK" feels better to use
                 if (buttonPressed == ActionCommand.ActionButtonPressed.BUTTON_EAST)
                 {

@@ -26,8 +26,10 @@ public class UnitAttack : MonoBehaviour
     public void AnimationBeginAttack()
     {
         Debug.LogWarning("Animator begin Attack!!");
-        animator.SetTrigger("BeginAttackAnim");
+        animator.SetTrigger("BeginAttackAnim"); //<-- Attack ID not changing
+        Debug.Log("Get Attack ID: " + battleManager.GetBaseItemAnimationID());
         animator.SetInteger("AttackID", battleManager.GetBaseItemAnimationID());
+        Debug.Log("TODO: Move unit to target position before attack animation plays.");
     }
 
     /// <summary>
@@ -111,7 +113,7 @@ public class UnitAttack : MonoBehaviour
     }
 
     /// <summary>
-    /// Make the list
+    /// Make the list.
     /// </summary>
     /// <param name="masterList"></param>
     /// <returns></returns>
