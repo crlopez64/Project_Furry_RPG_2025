@@ -168,69 +168,54 @@ public class BattleManager : MonoBehaviour
     //}
 
     /// <summary>
-    /// Add Heroes to Battle Manager's attention.
+    /// Advance the current unit turn's animation step. Within that animation, Action Command should be made.
     /// </summary>
-    public void PrepareHeroes(List<HeroStatsStorage> heroStatsStorage)
+    public void AdvanceNextAttackAnimation()
     {
-        // Allocate GameObjects count to heroStatsStorage
-        heroes = new List<GameObject>(4);
-        HeroStats findHeroStats = FindAnyObjectByType<HeroStats>();
-        for(int i = 0; i < heroStatsStorage.Count; i++)
-        {
-            if (i == 0)
-            {
-                heroes.Add(findHeroStats.gameObject);
-                continue;
-            }
-            GameObject getCopy = GameObject.Instantiate(heroes[0].gameObject, heroes[0].transform.position, heroes[0].transform.rotation);
-            heroes.Add(getCopy);
-        }
-        // Spawn Heroes
-        SpawnHeroesToLocation(heroes);
+        currentUnitsTurn.GetComponent<UnitAttack>().ActivateNextAttackStep();
     }
 
     /// <summary>
-    /// Add enemies to Battle Manager's attention.
+    /// Update current BattleState to cut off Player input.
     /// </summary>
-    /// <param name="enemies"></param>
-    public void PrepareEnemies(List<string>listOfEnemyNames, List<string> listOfEnemyScriptCalls)
+    public void ForceStopPlayerInput()
     {
-        SpawnEnemies(listOfEnemyNames, listOfEnemyScriptCalls);
-        SpawnEnemiesToLocation(enemies);
+        currentBattleState = BattleStateForPlayer.FINISH_TURN;
     }
 
     /// <summary>
-    /// Begin the battle.
+    /// Prepare an Action Command. Does not advance animation.
     /// </summary>
-    private void BeginBattle()
+    public void PrepareNextActionCommand()
     {
-        if (currentBattleState != BattleStateForPlayer.INTRODUCE_BATTLE)
+        Debug.Log("Preparing next Action Command!!");
+        if (strikesPrepared == null)
         {
+            Debug.LogError("Strikes prepared is empty!!");
             return;
         }
-        Debug.LogWarning("BEGIN RPG BATTLE SEQUENCE!!!!");
-        EndCurrentTurn();
-    }
-
-    /// <summary>
-    /// Open up the main battle menu to its first step.
-    /// </summary>
-    public void OpenMainBattleMenu()
-    {
-        currentMenu = NavigatingMenus.MAIN_MENU;
-        mainBattleMenu.OpenMainMenu();
-        mainBattleMenu.gameObject.SetActive(true);
-        cameraControl.BattleBegin(heroes, enemies);
-        CloseItemsMenu();
-    }
-
-    /// <summary>
-    /// Close out the main battle menu.
-    /// </summary>
-    public void CloseMainBattleMenu()
-    {
-        currentMenu = NavigatingMenus.NONE;
-        mainBattleMenu.gameObject.SetActive(false);
+        if (strikesPrepared.Count <= 0)
+        {
+            Debug.Log("Strikes was empty. Skipping...");
+            return;
+        }
+        AttackStep nextStrike = strikesPrepared.Dequeue();
+        switch (nextStrike.GetActionCommandType())
+        {
+            case ActionCommand.ActionType.RAPID_PRESS:
+                actionCommandManager.PrepareRapidPress(nextStrike);
+                break;
+            case ActionCommand.ActionType.SEQUENCE_PRESS:
+                //actionCommandManager.PrepareSequencePress(nextStrike);
+                Debug.LogError("ERROR: Sequence Press not yet implemented!!");
+                break;
+            case ActionCommand.ActionType.TIMELY_PRESS:
+                actionCommandManager.PrepareTimelyPress(nextStrike);
+                break;
+            case ActionCommand.ActionType.STICK_CONTROL:
+                Debug.LogError("ERROR: Stick Control not yet implemented!!");
+                break;
+        }
     }
 
     /// <summary>
@@ -281,11 +266,98 @@ public class BattleManager : MonoBehaviour
     }
 
     /// <summary>
+    /// Set currentBattleStateFinished to true. If finishing Hero's turn, turn off their HUD saying it's their turn.
+    /// </summary>
+    public void EndCurrentTurn()
+    {
+        currentBattleStateFinishedBool = true;
+        currentBattleState = BattleStateForPlayer.FINISH_TURN;
+        currentMenu = NavigatingMenus.NONE;
+        targetsToUseBaseItem = null;
+        if (currentUnitsTurn == null)
+        {
+            return;
+        }
+        // Turn off the "NOW!" HUD Plate
+        if (currentUnitsTurn.GetComponent<HeroStats>() != null)
+        {
+            currentUnitsTurn.GetComponent<HeroStats>().NoLongerHerosTurn();
+        }
+        unitCurrentSignal.ResetSignalToCharacter();
+    }
+
+    /// <summary>
+    /// Add Heroes to Battle Manager's attention.
+    /// </summary>
+    private void PrepareHeroes(List<HeroStatsStorage> heroStatsStorage)
+    {
+        // Allocate GameObjects count to heroStatsStorage
+        heroes = new List<GameObject>(4);
+        HeroStats findHeroStats = FindAnyObjectByType<HeroStats>();
+        for(int i = 0; i < heroStatsStorage.Count; i++)
+        {
+            if (i == 0)
+            {
+                heroes.Add(findHeroStats.gameObject);
+                continue;
+            }
+            GameObject getCopy = GameObject.Instantiate(heroes[0], heroes[0].transform.position, heroes[0].transform.rotation);
+            heroes.Add(getCopy);
+        }
+        // Spawn Heroes
+        SpawnHeroesToLocation(heroes);
+    }
+
+    /// <summary>
+    /// Add enemies to Battle Manager's attention.
+    /// </summary>
+    /// <param name="enemies"></param>
+    private void PrepareEnemies(List<string>listOfEnemyNames, List<string> listOfEnemyScriptCalls)
+    {
+        SpawnEnemies(listOfEnemyNames, listOfEnemyScriptCalls);
+        SpawnEnemiesToLocation(enemies);
+    }
+
+    /// <summary>
+    /// Begin the battle.
+    /// </summary>
+    private void BeginBattle()
+    {
+        if (currentBattleState != BattleStateForPlayer.INTRODUCE_BATTLE)
+        {
+            return;
+        }
+        Debug.LogWarning("BEGIN RPG BATTLE SEQUENCE!!!!");
+        EndCurrentTurn();
+    }
+
+    /// <summary>
+    /// Open up the main battle menu to its first step.
+    /// </summary>
+    private void OpenMainBattleMenu()
+    {
+        currentMenu = NavigatingMenus.MAIN_MENU;
+        mainBattleMenu.OpenMainMenu();
+        mainBattleMenu.gameObject.SetActive(true);
+        cameraControl.BattleBegin(heroes, enemies);
+        CloseItemsMenu();
+    }
+
+    /// <summary>
+    /// Close out the main battle menu.
+    /// </summary>
+    private void CloseMainBattleMenu()
+    {
+        currentMenu = NavigatingMenus.NONE;
+        mainBattleMenu.gameObject.SetActive(false);
+    }
+
+    /// <summary>
     /// Determine the Turn Order for everyone.
     /// </summary>
     /// <param name="heroes"></param>
     /// <param name="enemies"></param>
-    public void DetermineTurnOrder(List<GameObject> heroes, List<GameObject> enemies)
+    private void DetermineTurnOrder(List<GameObject> heroes, List<GameObject> enemies)
     {
         List<GameObject> everyone = new(heroes.Count + enemies.Count);
         everyone.AddRange(heroes);
@@ -303,7 +375,7 @@ public class BattleManager : MonoBehaviour
     /// Get next Unit's turn and update current Battle State. Enqueue finished Unit's turn back into the Queue.
     /// If it's Player's turn, activate Battle Menu.
     /// </summary>
-    public void GetNextTurn()
+    private void GetNextTurn()
     {
         Debug.LogWarning("Next Turn!!");
         // Place back to Queue
@@ -326,77 +398,6 @@ public class BattleManager : MonoBehaviour
         currentUnitsTurn.GetComponent<HeroStats>().ThisHerosTurn();
         OpenMainBattleMenu();
         TurnOnHudNarratorWithTimer("What will " + currentUnitsTurn.GetComponent<UnitStats>().GetUnitName() + " do?");
-    }
-
-    /// <summary>
-    /// Set currentBattleStateFinished to true. If finishing Hero's turn, turn off their HUD saying it's their turn.
-    /// </summary>
-    public void EndCurrentTurn()
-    {
-        currentBattleStateFinishedBool = true;
-        currentBattleState = BattleStateForPlayer.FINISH_TURN;
-        currentMenu = NavigatingMenus.NONE;
-        targetsToUseBaseItem = null;
-        if (currentUnitsTurn == null)
-        {
-            return;
-        }
-        // Turn off the "NOW!" HUD Plate
-        if (currentUnitsTurn.GetComponent<HeroStats>() != null)
-        {
-            currentUnitsTurn.GetComponent<HeroStats>().NoLongerHerosTurn();
-        }
-        unitCurrentSignal.ResetSignalToCharacter();
-    }
-
-    /// <summary>
-    /// Advance the current unit turn's animation step. Within that animation, Action Command should be made.
-    /// </summary>
-    public void AdvanceNextAttackAnimation()
-    {
-        currentUnitsTurn.GetComponent<UnitAttack>().ActivateNextAttackStep();
-    }
-
-    /// <summary>
-    /// Prepare an Action Command. Does not advance animation.
-    /// </summary>
-    public void PrepareNextActionCommand()
-    {
-        if (strikesPrepared == null)
-        {
-            Debug.LogError("Strikes prepared is empty!!");
-            return;
-        }
-        if (strikesPrepared.Count <= 0)
-        {
-            Debug.Log("Strikes was empty. Skipping...");
-            return;
-        }
-        AttackStep nextStrike = strikesPrepared.Dequeue();
-        switch (nextStrike.GetActionCommandType())
-        {
-            case ActionCommand.ActionType.RAPID_PRESS:
-                actionCommandManager.PrepareRapidPress(nextStrike);
-                break;
-            case ActionCommand.ActionType.SEQUENCE_PRESS:
-                //actionCommandManager.PrepareSequencePress(nextStrike);
-                Debug.LogError("ERROR: Sequence Press not yet implemented!!");
-                break;
-            case ActionCommand.ActionType.TIMELY_PRESS:
-                actionCommandManager.PrepareTimelyPress(nextStrike);
-                break;
-            case ActionCommand.ActionType.STICK_CONTROL:
-                Debug.LogError("ERROR: Stick Control not yet implemented!!");
-                break;
-        }
-    }
-
-    /// <summary>
-    /// Update current BattleState to cut off Player input.
-    /// </summary>
-    public void ForceStopPlayerInput()
-    {
-        currentBattleState = BattleStateForPlayer.FINISH_TURN;
     }
 
     /// <summary>
@@ -878,6 +879,7 @@ public class BattleManager : MonoBehaviour
                 }
                 return;
             case NavigatingMenus.SELECT_TARGET:
+                Debug.Log("Selecting target!!");
                 //TODO: Check if when selecting with same button as current menu, if pressing other buttons as "BACK" feels better to use
                 if (buttonPressed == ActionCommand.ActionButtonPressed.BUTTON_EAST)
                 {

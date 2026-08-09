@@ -760,17 +760,19 @@ PrefabInstance:
         On
         Enemy turn -> Enemy Attack
 
+        Check BattleManager.ExecuteTurn()
 
-        [South Button] - Microsoft A Button
-        / J Key
 
-        [East Button] - Microsoft B Button / K Key
+        [South
+        Button] - Microsoft A Button / J Key
 
-        [West
-        Button] - Microsoft X Button / U Key
+        [East Button] - Microsoft B
+        Button / K Key
 
-        [North Button] - Microsoft
-        Y Button / I Key'
+        [West Button] - Microsoft X Button / U Key
+
+        [North
+        Button] - Microsoft Y Button / I Key'
       objectReference: {fileID: 0}
     - target: {fileID: 7543081592991111852, guid: 24c379309cf42764b922afd066dfdaeb, type: 3}
       propertyPath: m_lineNumber
@@ -1288,6 +1290,7 @@ Animator:
   m_WriteDefaultValuesOnDisable: 0
 --- !u!212 &1721951533
 SpriteRenderer:
+  serializedVersion: 3
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -1333,6 +1336,7 @@ SpriteRenderer:
   m_SortingLayerID: -169525405
   m_SortingLayer: 3
   m_SortingOrder: 0
+  m_MaskInteraction: 0
   m_Sprite: {fileID: 21300000, guid: 94a3e8c9c77fa184b96759a8ea8ece80, type: 3}
   m_Color: {r: 0.53333336, g: 0.8646128, b: 1, a: 1}
   m_FlipX: 0
@@ -1342,8 +1346,8 @@ SpriteRenderer:
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
-  m_MaskInteraction: 0
   m_SpriteSortPoint: 1
+  m_BlendShapeWeights: []
 --- !u!1 &1925477387
 GameObject:
   m_ObjectHideFlags: 0

@@ -23,7 +23,7 @@ public class TestBattleScene : MonoBehaviour
 
     void Awake()
     {
-        testingHero = FindObjectsByType<HeroStats>(FindObjectsSortMode.InstanceID);
+        testingHero = FindObjectsByType<HeroStats>();
         battleScene_Action = InputSystem.actions.FindAction("BattleScene_Select");
         battleScene_Action_ButtonNorth = InputSystem.actions.FindAction("BattleScene_Action_ButtonNorth");
         battleScene_Action_ButtonWest = InputSystem.actions.FindAction("BattleScene_Action_ButtonWest");

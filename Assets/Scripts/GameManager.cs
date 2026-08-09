@@ -54,7 +54,6 @@ public class GameManager : MonoBehaviour
         //Player and Hero Stuff
         SetPriorityInLine(heroes);
         SetHeroesToFollowLine(heroes);
-        SetFollowPlayer();
         SetPlayerToMove();
     }
     private void Start()
@@ -203,7 +202,7 @@ public class GameManager : MonoBehaviour
     }
 
     /// <summary>
-    /// Set who this Unit should follow.
+    /// Set each Hero to follow the Hero in front of them in line.
     /// </summary>
     /// <param name="heroes"></param>
     public void SetHeroesToFollowLine(List<GameObject> heroes)
@@ -243,21 +242,6 @@ public class GameManager : MonoBehaviour
             {
                 getPlayerMove.StartPlayerMove();
                 return;
-            }
-        }
-    }
-
-    /// <summary>
-    /// Set who this Unit should be following.
-    /// </summary>
-    public void SetFollowPlayer()
-    {
-        for (int i = 1; i < heroes.Count; i++)
-        {
-            HeroMove getPlayerMove = heroes[i].GetComponent<HeroMove>();
-            if (getPlayerMove != null)
-            {
-                getPlayerMove.SetToFollowInLine(heroes[i-1].GetComponent<HeroMove>());
             }
         }
     }

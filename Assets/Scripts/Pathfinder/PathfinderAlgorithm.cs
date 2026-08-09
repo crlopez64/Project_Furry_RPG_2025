@@ -24,6 +24,7 @@ public class PathfinderAlgorithm : MonoBehaviour
     /// </summary>
     /// <param name="startPosition"></param>
     /// <param name="targetPosition"></param>
+    /// <param name="useMovementPenalty"></param>
     public void StartFindPath(Vector3 startPosition, Vector3 targetPosition, bool useMovementPenalty)
     {
         StartCoroutine(FindPath(startPosition, targetPosition, useMovementPenalty));
@@ -34,6 +35,8 @@ public class PathfinderAlgorithm : MonoBehaviour
     /// </summary>
     /// <param name="startingPosition"></param>
     /// <param name="targetPosition"></param>
+    /// <param name="useMovementPenalty"></param>
+    /// <returns></returns>
     private IEnumerator FindPath(Vector3 startingPosition, Vector3 targetPosition, bool useMovementPenalty)
     {
         Vector3[] waypoints = new Vector3[0];

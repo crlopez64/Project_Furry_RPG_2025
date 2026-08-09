@@ -1,15 +1,19 @@
 using System;
 using System.Collections;
 using System.Security.Cryptography;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Windows;
 
 /// <summary>
 /// Script in charge of Unit movement.
 /// </summary>
+[RequireComponent(typeof(Rigidbody2D))]
 public class UnitMove : MonoBehaviour
 {
     private BattleManager battleManager;
+    protected static readonly float withinDistanceAbsoluteLocation = 0.25f;
+    protected static readonly float withinDistanceGiveSpace = 3f;
     protected Transform toFollow;
     protected Animator animator;
     protected Rigidbody2D rb2D;
@@ -20,10 +24,22 @@ public class UnitMove : MonoBehaviour
     protected Vector2 inputVelocity;
     protected Vector2 destination;
     protected int pathTargetIndex;
-    protected readonly float overworldPartySpeed = 4f;
-    protected readonly float battleMoveSpeed = 10f;
-    protected readonly float inputSpeed = 5f;
+    protected readonly float battleMoveSpeed = 13f;
+    protected readonly float overworldPartySpeed = 6f;
+    protected readonly float battleKnockbackSpeedSlow = 6f;
+    protected readonly float battleKnockbackSpeedFast = 10f;
+    protected float withinDistanceRange = 0f;
     protected float autoMoveSpeed = 10f;
+
+    /// <summary>
+    /// What should BattleManager do when Unit arrives to its destination?
+    /// </summary>
+    public enum StateForBattleManager : byte
+    {
+        NONE,
+        ATTACK,
+        END_TURN
+    }
 
     /// <summary>
     /// The 8-way direction. Ordered in such a way that Player Input can easily take this in.
@@ -39,11 +55,11 @@ public class UnitMove : MonoBehaviour
         DOWN,
         DOWN_RIGHT
     }
-    
+
     /// <summary>
-    /// How unit should move? Movement only via UserInput (also ties with zero move); move directly toward a target; move via pathway
+    /// How should the unit move?
     /// </summary>
-    public enum FollowFrequency : byte
+    protected enum FollowFrequency : byte
     {
         /// <summary>
         /// Do not move; Move directly with User Input.
@@ -54,19 +70,24 @@ public class UnitMove : MonoBehaviour
         /// </summary>
         DIRECT,
         /// <summary>
+        /// Idle and wait for a path to be provided by a pathfinder.
+        /// </summary>
+        PATHFINDER_IDLE,
+        /// <summary>
         /// Follow a set path via a pathfinder.
         /// </summary>
-        PATHFINDER
+        PATHFINDER_WALK,
     }
 
     /// <summary>
-    /// What should BattleManager do when Unit arrives to its destination?
+    /// Move speed for units.
     /// </summary>
-    public enum StateForBattleManager : byte
+    protected enum MoveSpeed : byte
     {
-        NONE,
-        ATTACK,
-        END_TURN
+        OVERWORLD,
+        BATTLE_SPEED,
+        BATTLE_KNOCKBACK_SLOW,
+        BATTLE_KNOCKBACK_FAST
     }
 
     public virtual void Awake()
@@ -78,8 +99,11 @@ public class UnitMove : MonoBehaviour
     {
         inputVelocity = Vector2.zero;
         facingDirection = Direction.DOWN;
+        withinDistanceRange = withinDistanceAbsoluteLocation;
         if (toFollow != null)
         {
+            followFrequency = FollowFrequency.PATHFINDER_WALK;
+            withinDistanceRange = withinDistanceGiveSpace;
             PathfinderRequestManager.RequestPath(transform.position, toFollow.position, false, OnPathFound);
         }
     }
@@ -88,49 +112,61 @@ public class UnitMove : MonoBehaviour
         switch(followFrequency)
         {
             case FollowFrequency.NONE:
-                rb2D.linearVelocity = inputVelocity * inputSpeed;
+                Move(inputVelocity, MoveSpeed.OVERWORLD, true);
                 break;
             case FollowFrequency.DIRECT:
-                float step = autoMoveSpeed * Time.deltaTime;
-                Vector3 getMoveTowards = Vector3.MoveTowards(transform.position, destination, step);
-                transform.position = getMoveTowards;
-                facingDirection = (Direction)GetEightSectionVector(getMoveTowards);
-                if (Vector3.Distance(transform.position, destination) < 0.01)
+                if (WithinDistanceTo(destination))
                 {
-                    Debug.Log("Reached destination!");
                     followFrequency = FollowFrequency.NONE;
+                    //Battle Logic
                     if (battleManager == null)
                     {
                         break;
                     }
-                    else
+                    switch (stateForBattleManager)
                     {
-                        switch(stateForBattleManager)
-                        {  
-                            case StateForBattleManager.NONE:
-                                break;
-                            case StateForBattleManager.ATTACK:
-                                battleManager.ExecuteTurnPrepareAttack();
-                                break;
-                            case StateForBattleManager.END_TURN:
-                                battleManager.EndCurrentTurn();
-                                break;
-                        }
+                        case StateForBattleManager.NONE:
+                            break;
+                        case StateForBattleManager.ATTACK:
+                            battleManager.ExecuteTurnPrepareAttack();
+                            break;
+                        case StateForBattleManager.END_TURN:
+                            battleManager.EndCurrentTurn();
+                            break;
                     }
-                    
-                }
-                break;
-            case FollowFrequency.PATHFINDER:
-                //TODO: If follow player (or follow next unit), update destination Transform
-                //If following player, and player looking away from unit, following in line
-                //If following player, and player looking at unit, move away from Player (still facing at player) until Player is moving out
-                if (!HasTargetToFollow())
-                {
                     break;
                 }
-                if (ReachedPathProvidedByPathfinder())
+                Move(Vector2.zero, MoveSpeed.BATTLE_SPEED, false);
+                break;
+            case FollowFrequency.PATHFINDER_IDLE:
+                Move(Vector2.zero, MoveSpeed.OVERWORLD, true);
+                if (!WithinDistanceTo(toFollow))
                 {
-                    if (!WithinDistanceTo(toFollow)) //If not within 2u
+                    followFrequency = FollowFrequency.PATHFINDER_WALK;
+                    BeginPathfindingAgain();
+
+                }
+                break;
+            case FollowFrequency.PATHFINDER_WALK:
+                if (!HasTargetToFollow())
+                {
+                    followFrequency = FollowFrequency.PATHFINDER_IDLE;
+                    break;
+                }
+                if (WithinDistanceTo(toFollow))
+                {
+                    ClearPathToFind();
+                }
+                else
+                {
+                    //TODO: If the Unit is stuck, clear the path and begin pathfinding again.
+                    //if (rb2D.linearVelocity.magnitude <= 0.1f)
+                    //{
+                    //    ClearPathToFind();
+                    //    BeginPathfindingAgain();
+                    //    break;
+                    //}
+                    if (ReachedPathProvidedByPathfinder())
                     {
                         PathfinderRequestManager.RequestPath(transform.position, toFollow.position, false, OnPathFound);
                     }
@@ -143,7 +179,7 @@ public class UnitMove : MonoBehaviour
         animator.SetFloat("Velocity", rb2D.linearVelocity.magnitude);
         animator.SetBool("Battle_MovingTowardFacingDirection", BattleMovingTowardFacingDirection());
     }
-    private void OnDrawGizmos()
+    public void OnDrawGizmos()
     {
         if (pathToFollow != null)
         {
@@ -161,12 +197,6 @@ public class UnitMove : MonoBehaviour
                 }
             }
         }
-    }
-
-    private void ClearPathToFind()
-    {
-        pathToFollow = null;
-        pathTargetIndex = 0;
     }
 
     /// <summary>
@@ -190,11 +220,21 @@ public class UnitMove : MonoBehaviour
     /// <returns></returns>
     private IEnumerator FollowPath()
     {
+        // If no path is available or already within distance to the follow target, stop following
+        if (pathToFollow == null || pathToFollow.Length == 0)
+        {
+            yield break;
+        }
         Vector3 currentWaypoint = pathToFollow[0];
         pathTargetIndex = 0;
-        while(true)
+        while (true)
         {
-            if (transform.position == currentWaypoint)
+            // If path gets cleared while following, exit and clear state
+            if (pathToFollow == null || pathToFollow.Length == 0)
+            {
+                yield break;
+            }
+            if (Vector3.Distance(transform.position, currentWaypoint) < 0.125f)
             {
                 pathTargetIndex++;
                 if (pathTargetIndex >= pathToFollow.Length)
@@ -203,9 +243,8 @@ public class UnitMove : MonoBehaviour
                 }
                 currentWaypoint = pathToFollow[pathTargetIndex];
             }
-            float step = autoMoveSpeed * Time.deltaTime;
-            Vector3 getMoveTowards = Vector3.MoveTowards(transform.position, currentWaypoint, step);
-            transform.position = getMoveTowards;
+            Vector3 workingDirection = currentWaypoint - transform.position;
+            Move(workingDirection, MoveSpeed.OVERWORLD, true);
             yield return null;
         }
     }
@@ -213,6 +252,9 @@ public class UnitMove : MonoBehaviour
     /// <summary>
     /// Move the unit directly toward a position.
     /// </summary>
+    /// <param name="destination"></param>
+    /// <param name="battleManager"></param>
+    /// <param name="stateForBattleManager"></param>
     public void MoveUnitDirectlyToLocation(Vector2 destination, BattleManager battleManager, StateForBattleManager stateForBattleManager)
     {
         this.destination = destination;
@@ -222,12 +264,49 @@ public class UnitMove : MonoBehaviour
     }
 
     /// <summary>
-    /// Stop auto move and/or pathfinding.
+    /// Move the Unit.
     /// </summary>
-    public void StopAutoMoveLocation()
+    /// <param name="directionalInput"></param>
+    /// <param name="moveSpeed"></param>
+    /// <param name="eightDirectionOnly"></param>
+    protected void Move(Vector2 directionalInput, MoveSpeed moveSpeed, bool eightDirectionOnly)
     {
-        followFrequency = FollowFrequency.NONE;
-        destination = Vector2.zero;
+        byte eighthAngle = GetEightSectionVector(directionalInput);
+        facingDirection = (Direction)eighthAngle;
+        float movingSpeed = 0;
+        if (directionalInput != Vector2.zero)
+        {
+            switch (moveSpeed)
+            {
+                case MoveSpeed.OVERWORLD:
+                    movingSpeed = overworldPartySpeed;
+                    break;
+                case MoveSpeed.BATTLE_SPEED:
+                    movingSpeed = battleMoveSpeed;
+                    break;
+                case MoveSpeed.BATTLE_KNOCKBACK_SLOW:
+                    movingSpeed = battleKnockbackSpeedSlow;
+                    break;
+                case MoveSpeed.BATTLE_KNOCKBACK_FAST:
+                    movingSpeed = battleKnockbackSpeedFast;
+                    break;
+            }
+        }
+        rb2D.linearVelocity = (eightDirectionOnly ? GetDirectionalVelocity(eighthAngle) : directionalInput.normalized) * movingSpeed;
+    }
+
+    /// <summary>
+    /// Return this Unit to follow its target.
+    /// </summary>
+    protected void BeginPathfindingAgain()
+    {
+        if ((toFollow == null) || (followFrequency != FollowFrequency.PATHFINDER_WALK))
+        {
+            return;
+        }
+        followFrequency = FollowFrequency.PATHFINDER_WALK;
+        withinDistanceRange = withinDistanceGiveSpace;
+        PathfinderRequestManager.RequestPath(transform.position, toFollow.position, false, OnPathFound);
     }
 
     /// <summary>
@@ -238,7 +317,8 @@ public class UnitMove : MonoBehaviour
     {
         toFollow = unitMove.transform;
         autoMoveSpeed = overworldPartySpeed;
-        followFrequency = FollowFrequency.PATHFINDER;
+        followFrequency = FollowFrequency.PATHFINDER_WALK;
+        withinDistanceRange = withinDistanceGiveSpace;
     }
 
     /// <summary>
@@ -251,9 +331,20 @@ public class UnitMove : MonoBehaviour
     }
 
     /// <summary>
+    /// Return if this Unit is within distance of a world position.
+    /// </summary>
+    /// <param name="position"></param>
+    /// <returns></returns>
+    protected bool WithinDistanceTo(Vector2 position)
+    {
+        return Vector3.Distance(transform.position, position) <= withinDistanceRange;
+    }
+
+    /// <summary>
     /// Return if this Unit is within distance of its toFollow unit.
     /// Return true if toFollow does not exist.
     /// </summary>
+    /// <param name="toFollow"></param>
     /// <returns></returns>
     protected bool WithinDistanceTo(Transform toFollow)
     {
@@ -261,7 +352,7 @@ public class UnitMove : MonoBehaviour
         {
             return true;
         }
-        return Vector3.Distance(transform.position, toFollow.position) <= 1.85f;
+        return Vector3.Distance(transform.position, toFollow.position) <= withinDistanceRange;
     }
 
     /// <summary>
@@ -338,6 +429,17 @@ public class UnitMove : MonoBehaviour
             default: //Neutral
                 return Vector2.zero;
         }
+    }
+
+    /// <summary>
+    /// Clean up pathfinding variables and stop following the path.
+    /// </summary>
+    private void ClearPathToFind()
+    {
+        StopCoroutine(FollowPath());
+        followFrequency = FollowFrequency.PATHFINDER_IDLE;
+        pathToFollow = null;
+        pathTargetIndex = 0;
     }
 
     /// <summary>

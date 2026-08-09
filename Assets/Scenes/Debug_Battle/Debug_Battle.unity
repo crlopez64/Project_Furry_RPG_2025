@@ -158,6 +158,7 @@ Transform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!212 &226414576
 SpriteRenderer:
+  serializedVersion: 3
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -203,6 +204,7 @@ SpriteRenderer:
   m_SortingLayerID: -169525405
   m_SortingLayer: 3
   m_SortingOrder: 0
+  m_MaskInteraction: 0
   m_Sprite: {fileID: 21300000, guid: 94a3e8c9c77fa184b96759a8ea8ece80, type: 3}
   m_Color: {r: 0.53333336, g: 0.8646128, b: 1, a: 1}
   m_FlipX: 0
@@ -212,8 +214,8 @@ SpriteRenderer:
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
-  m_MaskInteraction: 0
   m_SpriteSortPoint: 1
+  m_BlendShapeWeights: []
 --- !u!1001 &1111274963
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -427,6 +429,14 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 979457169134994647, guid: 24c379309cf42764b922afd066dfdaeb, type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 979457169134994647, guid: 24c379309cf42764b922afd066dfdaeb, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 983833932517524152, guid: 24c379309cf42764b922afd066dfdaeb, type: 3}
       propertyPath: m_AnchorMax.y
       value: 0
@@ -738,6 +748,10 @@ PrefabInstance:
     - target: {fileID: 4699542248387693455, guid: 24c379309cf42764b922afd066dfdaeb, type: 3}
       propertyPath: m_AnchoredPosition.y
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4873130801614939692, guid: 24c379309cf42764b922afd066dfdaeb, type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6017858601128057144, guid: 24c379309cf42764b922afd066dfdaeb, type: 3}
       propertyPath: m_AnchorMax.y
@@ -1228,7 +1242,6 @@ MonoBehaviour:
   setSpeed: 8
   setLuck: 3
   setDamageRollerSpeed: 3
-  useSampleAttackList: 1
 --- !u!114 &1721951526
 MonoBehaviour:
   m_ObjectHideFlags: 0

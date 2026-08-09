@@ -7,7 +7,7 @@ using UnityEngine;
 /// <summary>
 /// Class for a Unit being able to request for a path to follow.
 /// </summary>
-[RequireComponent(typeof(PathfinderGrid))]
+[RequireComponent(typeof(PathfinderAlgorithm))]
 public class PathfinderRequestManager : MonoBehaviour
 {
     private Queue<PathRequest> pathRequestQueue = new Queue<PathRequest>();

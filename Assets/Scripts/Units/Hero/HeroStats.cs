@@ -203,7 +203,7 @@ public class HeroStats : UnitStats
     /// Reduce the Current Health Estimate for Current Health to roll to.
     /// </summary>
     /// <param name="baseDamage"></param>
-    /// <param name="opponentAttackStat"></param>
+    /// <param name="opponentStats"></param>
     /// <param name="statType"></param>
     public override void TakeDamage(int baseDamage, UnitStats opponentStats, StatType statType)
     {

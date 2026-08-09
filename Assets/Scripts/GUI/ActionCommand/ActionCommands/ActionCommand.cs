@@ -1,5 +1,8 @@
 using UnityEngine;
 
+/// <summary>
+/// The base ActionCommand.
+/// </summary>
 public class ActionCommand : MonoBehaviour
 {
     protected ActionCommandManager actionCommandManager;

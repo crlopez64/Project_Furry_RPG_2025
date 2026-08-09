@@ -49,8 +49,7 @@ public class ActionCommandManager : MonoBehaviour
     /// <summary>
     /// Prepare a Rapid Press Action for Player to interact with. Only 1 should be active at any given moment.
     /// </summary>
-    /// <param name="pressType"></param>
-    /// <param name="buttonRequired"></param>
+    /// <param name="attackStep"></param>
     public void PrepareRapidPress(AttackStep attackStep)
     {
         if (rapidPress.gameObject.activeInHierarchy)
@@ -83,8 +82,7 @@ public class ActionCommandManager : MonoBehaviour
     /// <summary>
     /// Prepare a Timely Press Action for player to interact with.
     /// </summary>
-    /// <param name="pressType"></param>
-    /// <param name="buttonRequired"></param>
+    /// <param name="attackStep"></param>
     public void PrepareTimelyPress(AttackStep attackStep)
     {
         if (timelyPress.gameObject.activeInHierarchy)
@@ -121,8 +119,8 @@ public class ActionCommandManager : MonoBehaviour
     /// <summary>
     /// Let Action Command report back that Player has succeeded task.
     /// </summary>
-    /// <param name="actionType"></param>
     /// <param name="transform"></param>
+    /// <param name="attackStep"></param>
     public void ReportActionCommandPass(Transform transform, AttackStep attackStep)
     {
         SetActionCommandBonus(transform, attackStep);
