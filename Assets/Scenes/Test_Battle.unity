@@ -760,7 +760,10 @@ PrefabInstance:
         On
         Enemy turn -> Enemy Attack
 
-        Check BattleManager.ExecuteTurn()
+        Enemy to have stats nonzero
+
+        How
+        different is Hero Spawn at Begin Battle vs Enemy Spawn at Begin Battle?
 
 
         [South

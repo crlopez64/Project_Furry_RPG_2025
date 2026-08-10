@@ -5,8 +5,10 @@ using UnityEngine;
 /// <summary>
 /// Script in charge of being an Enemy Placeholder at battle.
 /// </summary>
-[RequireComponent(typeof(EnemyStats))]
 [RequireComponent(typeof(UnitMove))]
+[RequireComponent(typeof(EnemyStats))]
+[RequireComponent(typeof(Rigidbody2D))]
+[RequireComponent(typeof(BoxCollider2D))]
 public class EnemyUnitHolder : MonoBehaviour
 {
     //private RuntimeAnimatorController controller;

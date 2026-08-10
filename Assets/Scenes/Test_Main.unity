@@ -1369,23 +1369,24 @@ PrefabInstance:
       propertyPath: m_text
       value: 'NEXT TODO: Look into flow of gamepaly (Overworld > Battle > Overworld)
 
-        Check
-        BattleManager.ExecuteTurn()
+        Give
+        Enemy Encounter stats (including health to non-zero value)
 
 
-        Units have [X, Y, Z] freeze until moving
+        Units
+        have [X, Y, Z] freeze until moving
 
 
-        [South
-        Button] - Microsoft A Button / J Key
+        [South Button] - Microsoft A
+        Button / J Key
 
-        [East Button] - Microsoft B
-        Button / K Key
+        [East Button] - Microsoft B Button / K Key
 
-        [West Button] - Microsoft X Button / U Key
+        [West
+        Button] - Microsoft X Button / U Key
 
-        [North
-        Button] - Microsoft Y Button / I Key'
+        [North Button] - Microsoft
+        Y Button / I Key'
       objectReference: {fileID: 0}
     - target: {fileID: 316018026912465851, guid: 33dea90bf99f7fc419cf5ba820f554f6, type: 3}
       propertyPath: m_AnchorMax.y

@@ -35,7 +35,7 @@ public class PlayerMove : HeroMove
     /// <summary>
     /// Add Input move to this unit.
     /// </summary>
-    /// <param name="context"></param>
+    /// <param name="getInput"></param>
     public void InputMove(Vector2 getInput)
     {
         if (!playerCanMove)

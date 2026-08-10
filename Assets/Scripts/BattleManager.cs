@@ -520,6 +520,7 @@ public class BattleManager : MonoBehaviour
     /// <param name="attackStep"></param>
     public void AttackEnemies(AttackStep attackStep)
     {
+        Debug.Log("Attacking enemies!! Targets found: " + targetsToUseBaseItem.Length);
         if (targetsToUseBaseItem == null)
         {
             Debug.LogError("WAIT!! No targets set!!");
@@ -534,8 +535,10 @@ public class BattleManager : MonoBehaviour
             if (getStats.IsDefeated())
             {
                 //Ignore enemy is already defeated.
+                Debug.LogWarning("This enemy is defeated!!");
                 continue;
             }
+            Debug.Log("TODO: AttackSteps to require accuracy?");
             if (getStats.DidAttackLand(100))
             {
                 unit.ActivateGettingHit();

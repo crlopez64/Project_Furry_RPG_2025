@@ -26,14 +26,13 @@ public class UnitAttack : MonoBehaviour
     public void AnimationBeginAttack()
     {
         Debug.LogWarning("Animator begin Attack!!");
-        animator.SetTrigger("BeginAttackAnim"); //<-- Attack ID not changing
+        animator.SetTrigger("BeginAttackAnim");
         Debug.Log("Get Attack ID: " + battleManager.GetBaseItemAnimationID());
         animator.SetInteger("AttackID", battleManager.GetBaseItemAnimationID());
-        Debug.Log("TODO: Move unit to target position before attack animation plays.");
     }
 
     /// <summary>
-    /// Activate the next Action Command
+    /// Activate the next Action Command.
     /// </summary>
     public void ActivateActionCommand()
     {

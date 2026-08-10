@@ -126,7 +126,6 @@ public class ActionCommandManager : MonoBehaviour
         SetActionCommandBonus(transform, attackStep);
         ClearOut();
         battleManager.AdvanceNextAttackAnimation();
-        //TODO: Determine if Attack lands or hits
         battleManager.AttackEnemies(attackStep);
     }
 
@@ -142,7 +141,6 @@ public class ActionCommandManager : MonoBehaviour
         actionCommandResult.gameObject.SetActive(true);
         ClearOut();
         battleManager.AdvanceNextAttackAnimation();
-        //TODO: Determine if Attack lands or hits
         battleManager.AttackEnemies(attackStep);
     }
 
