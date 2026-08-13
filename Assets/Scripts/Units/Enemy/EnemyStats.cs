@@ -15,10 +15,6 @@ public class EnemyStats : UnitStats
         experienceReward = setExperienceReward;
         statusAilments = new List<StatusAilment>();
     }
-    private void Start()
-    {
-        statusAilments = new List<StatusAilment>();
-    }
 
     /// <summary>
     /// Return the amount of Experience this enemy gives upon defeat.

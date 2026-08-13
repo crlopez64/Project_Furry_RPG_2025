@@ -362,12 +362,12 @@ public class BattleManager : MonoBehaviour
         List<GameObject> everyone = new(heroes.Count + enemies.Count);
         everyone.AddRange(heroes);
         everyone.AddRange(enemies);
-        everyone = everyone.OrderByDescending(unit => unit.GetComponent<UnitStats>().GetStatSpeed()).
-            ThenBy(unit => unit.GetComponent<UnitStats>().GetStatLuck()).
-            ThenBy(unit => unit.GetComponent<UnitStats>().GetStatDefenseSpecial()).
-            ThenBy(unit => unit.GetComponent<UnitStats>().GetStatDefensePhysical()).
-            ThenBy(unit => unit.GetComponent<UnitStats>().GetStatAttackSpecial()).
-            ThenBy(unit => unit.GetComponent<UnitStats>().GetStatAttackPhysical()).ToList();
+        everyone = everyone.OrderByDescending(unit => unit.GetComponent<UnitStats>().GetStatValue(UnitStats.StatType.SPEED)).
+            ThenBy(unit => unit.GetComponent<UnitStats>().GetStatValue(UnitStats.StatType.LUCK)).
+            ThenBy(unit => unit.GetComponent<UnitStats>().GetStatValue(UnitStats.StatType.DEFENSE_SPECIAL)).
+            ThenBy(unit => unit.GetComponent<UnitStats>().GetStatValue(UnitStats.StatType.DEFENSE_PHYSICAL)).
+            ThenBy(unit => unit.GetComponent<UnitStats>().GetStatValue(UnitStats.StatType.ATTACK_SPECIAL)).
+            ThenBy(unit => unit.GetComponent<UnitStats>().GetStatValue(UnitStats.StatType.ATTACK_PHYSICAL)).ToList();
         turnOrder = new Queue<GameObject>(everyone);
     }
 
@@ -411,7 +411,7 @@ public class BattleManager : MonoBehaviour
             return;
         }
         List<GameObject> newTurnOrderList = new(turnOrder);
-        newTurnOrderList.Insert((newTurnOrderList[0].GetComponent<UnitStats>().GetStatSpeed() < unit.GetStatSpeed()) ? 0 : 2, unit.gameObject);
+        newTurnOrderList.Insert((newTurnOrderList[0].GetComponent<UnitStats>().GetStatValue(UnitStats.StatType.SPEED) < unit.GetStatValue(UnitStats.StatType.SPEED)) ? 0 : 2, unit.gameObject);
         turnOrder = new Queue<GameObject>(newTurnOrderList);
     }
 

@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -21,6 +22,22 @@ public class HeroStats : UnitStats
     /// The true estimated health to report to for currentHealth to reach to, after Luck stat.
     /// </summary>
     private int trueCurrentHealthEstimate;
+
+    protected int statEquipmentMaxHealth = 0;
+    protected int statEquipmentMaxMana = 0;
+    protected int statEquipmentAttackPhysical = 0;
+    protected int statEquipmentDefensePhysical = 0;
+    protected int statEquipmentAttackSpecial = 0;
+    protected int statEquipmentDefenseSpecial = 0;
+    protected int statEquipmentSpeed = 0;
+
+    protected int statPermBonusMaxHealth = 0;
+    protected int statPermBonusMaxMana = 0;
+    protected int statPermBonusAttackPhysical = 0;
+    protected int statPermBonusDefensePhysical = 0;
+    protected int statPermBonusAttackSpecial = 0;
+    protected int statPermBonusDefenseSpecial = 0;
+    protected int statPermBonusSpeed = 0;
 
     public string setName;
     public int setMaxHealth;
@@ -170,6 +187,199 @@ public class HeroStats : UnitStats
     }
 
     /// <summary>
+    /// Add to the Unit's Equipmentstat value based off of the StatType given.
+    /// </summary>
+    /// <param name="statType"></param>
+    /// <param name="value"></param>
+    /// <exception cref="ArgumentOutOfRangeException"></exception>
+    public void AddEquipStatValue(StatType statType, int value)
+    {
+        switch (statType)
+        {
+            case StatType.MAX_HEALTH:
+                statEquipmentMaxHealth += value;
+                break;
+            case StatType.MAX_MANA: 
+                statEquipmentMaxMana += value; 
+                break;
+            case StatType.ATTACK_PHYSICAL:
+                statEquipmentAttackPhysical += value;
+                break;
+            case StatType.DEFENSE_PHYSICAL:
+                statEquipmentDefensePhysical += value;
+                break;
+            case StatType.ATTACK_SPECIAL:
+                statEquipmentAttackSpecial += value;
+                break;
+            case StatType.DEFENSE_SPECIAL:
+                statEquipmentDefenseSpecial += value;
+                break;
+            case StatType.SPEED:
+                statEquipmentSpeed += value;
+                break;
+            case StatType.LUCK:
+                statLuck += value;
+                break;
+            default:
+                throw new ArgumentOutOfRangeException(nameof(statType), statType, null);
+        }
+    }
+
+    /// <summary>
+    /// Reduce the Unit's Equipment stat value based off of the StatType given.
+    /// </summary>
+    /// <param name="statType"></param>
+    /// <param name="value"></param>
+    /// <exception cref="ArgumentOutOfRangeException"></exception>
+    public void ReduceEquipStatValue(StatType statType, int value)
+    {
+        switch (statType)
+        {
+            case StatType.MAX_HEALTH:
+                statEquipmentMaxHealth -= value;
+                if (statEquipmentMaxHealth <= 0)
+                { statEquipmentMaxHealth = 0; }
+                break;
+            case StatType.MAX_MANA:
+                statEquipmentMaxMana -= value;
+                if (statEquipmentMaxMana <= 0)
+                { statEquipmentMaxMana = 0; }
+                break;
+            case StatType.ATTACK_PHYSICAL:
+                statEquipmentAttackPhysical -= value;
+                if (statEquipmentAttackPhysical <= 0)
+                { statEquipmentAttackPhysical = 0; }
+                break;
+            case StatType.DEFENSE_PHYSICAL:
+                statEquipmentDefensePhysical -= value;
+                if (statEquipmentDefensePhysical <= 0)
+                { statEquipmentDefensePhysical = 0; }
+                break;
+            case StatType.ATTACK_SPECIAL:
+                statEquipmentAttackSpecial -= value;
+                if (statEquipmentAttackSpecial <= 0)
+                { statEquipmentAttackSpecial = 0; }
+                break;
+            case StatType.DEFENSE_SPECIAL:
+                statEquipmentDefenseSpecial -= value;
+                if (statEquipmentDefenseSpecial <= 0)
+                { statEquipmentDefenseSpecial = 0; }
+                break;
+            case StatType.SPEED:
+                statEquipmentSpeed -= value;
+                if (statEquipmentSpeed <= 0)
+                { statEquipmentSpeed = 0; }
+                break;
+            case StatType.LUCK:
+                statLuck -= value;
+                if (statLuck <= 0)
+                { statLuck = 0; }
+                break;
+            default:
+                throw new ArgumentOutOfRangeException(nameof(statType), statType, null);
+        }
+    }
+
+    /// <summary>
+    /// Add to the Unit's Permanent Bonus stat value based off of the StatType given.
+    /// </summary>
+    /// <param name="statType"></param>
+    /// <param name="value"></param>
+    /// <exception cref="ArgumentOutOfRangeException"></exception>
+    public void AddPermBonusStatValue(StatType statType, int value)
+    {
+        switch (statType)
+        {
+            case StatType.MAX_HEALTH:
+                statPermBonusMaxHealth += value;
+                break;
+            case StatType.MAX_MANA:
+                statPermBonusMaxMana += value;
+                break;
+            case StatType.ATTACK_PHYSICAL:
+                statPermBonusAttackPhysical += value;
+                break;
+            case StatType.DEFENSE_PHYSICAL:
+                statPermBonusDefensePhysical += value;
+                break;
+            case StatType.ATTACK_SPECIAL:
+                statPermBonusAttackSpecial += value;
+                break;
+            case StatType.DEFENSE_SPECIAL:
+                statPermBonusDefenseSpecial += value;
+                break;
+            case StatType.SPEED:
+                statPermBonusSpeed += value;
+                break;
+            case StatType.LUCK:
+                statLuck += value;
+                break;
+            default:
+                throw new ArgumentOutOfRangeException(nameof(statType), statType, null);
+        }
+    }
+
+    /// <summary>
+    /// Return the final stat value for a given StatType, which includes permanent bonuses and equipment bonuses.
+    /// </summary>
+    /// <param name="statType"></param>
+    /// <returns></returns>
+    public override int GetStatValue(StatType statType)
+    {
+        int statPermBonus = 0;
+        switch (statType)
+        {
+            case StatType.MAX_HEALTH:
+                statPermBonus = statPermBonusMaxHealth;
+                break;
+            case StatType.MAX_MANA:
+                statPermBonus = statPermBonusMaxMana;
+                break;
+            case StatType.ATTACK_PHYSICAL:
+                statPermBonus = statPermBonusAttackPhysical;
+                break;
+            case StatType.DEFENSE_PHYSICAL:
+                statPermBonus = statPermBonusDefensePhysical;
+                break;
+            case StatType.ATTACK_SPECIAL:
+                statPermBonus = statPermBonusAttackSpecial;
+                break;
+            case StatType.DEFENSE_SPECIAL:
+                statPermBonus = statPermBonusDefenseSpecial;
+                break;
+            case StatType.SPEED:
+                statPermBonus = statPermBonusSpeed;
+                break;
+        }
+        int statEquipment = 0;
+        switch (statType)
+        {
+            case StatType.MAX_HEALTH:
+                statEquipment = statEquipmentMaxHealth;
+                break;
+            case StatType.MAX_MANA:
+                statEquipment = statEquipmentMaxMana;
+                break;
+            case StatType.ATTACK_PHYSICAL:
+                statEquipment = statEquipmentAttackPhysical;
+                break;
+            case StatType.DEFENSE_PHYSICAL:
+                statEquipment = statEquipmentDefensePhysical;
+                break;
+            case StatType.ATTACK_SPECIAL:
+                statEquipment = statEquipmentAttackSpecial;
+                break;
+            case StatType.DEFENSE_SPECIAL:
+                statEquipment = statEquipmentDefenseSpecial;
+                break;
+            case StatType.SPEED:
+                statEquipment = statEquipmentSpeed;
+                break;
+        }
+        return GetStatFromWorkingAlgorithm(statType) + statPermBonus + statEquipment;
+    }
+
+    /// <summary>
     /// Restore Hero's Health to max; set Estimate to max health to avoid weird rolling.
     /// </summary>
     public override void HealthRestore()
@@ -229,7 +439,7 @@ public class HeroStats : UnitStats
     /// <param name="statType"></param>
     public override void TakeDamageGuaranteeLuck(int baseDamage, UnitStats opponentStats, StatType statType)
     {
-        int reducedDamageEstimate = (int)(baseDamage * Random.Range(0.75f, 0.95f));
+        int reducedDamageEstimate = (int)(baseDamage * UnityEngine.Random.Range(0.75f, 0.95f));
         currentHealthEstimate -= CalculateDamage(baseDamage, opponentStats, statType);
         trueCurrentHealthEstimate -= CalculateDamage(reducedDamageEstimate, opponentStats, statType);
         if (currentHealthEstimate <= 0)

@@ -1,3 +1,4 @@
+using JetBrains.Annotations;
 using System.Collections;
 using System.Collections.Generic;
 
@@ -7,7 +8,17 @@ using System.Collections.Generic;
 public class Item : BaseItem
 {
     //TODO: Deal with Images
-    private readonly Dictionary<UnitStats.StatusAilment, int> statusAilments;
+    /// <summary>
+    /// The list of Status Ailments this Item can recover from the target.
+    /// </summary>
+    private readonly List<UnitStats.StatusAilment> statusAilmentRecovery;
+    /// <summary>
+    /// The list of Status Ailments this Item can inflict on the target.
+    /// </summary>
+    private readonly List<UnitStats.StatusAilment> statusAilments;
+    /// <summary>
+    /// The list of Stat Effects this Item can apply to the target.
+    /// </summary>
     private readonly Dictionary<StatEffectType, int> statValues;
     private readonly EquipLocation equipLocation;
     private readonly ItemType itemType;
@@ -46,27 +57,85 @@ public class Item : BaseItem
     /// <param name="itemType"></param>
     /// <param name="statValues"></param>
     public Item(int animationID, string name, string description, ItemType itemType, EquipLocation equipLocation, IntendedTarget target,
-        Dictionary<StatEffectType, int> statValues, Dictionary<UnitStats.StatusAilment, int> statusAilments, byte statusAilmentChance)
+        Dictionary<StatEffectType, int> statValues, List<UnitStats.StatusAilment> statusAilmentRecovery, List<UnitStats.StatusAilment> statusAilments, byte statusAilmentChance)
         : base (animationID, name, description, target)
     {
         whereToMovePriorToUse = WhereToMovePriorToUse.STAY_IN_PLACE;
         classification = ItemClassification.ITEM;
         this.statusAilmentChance = statusAilmentChance;
+        this.statusAilmentRecovery = statusAilmentRecovery;
         this.statusAilments = statusAilments;
         this.equipLocation = equipLocation;
         this.statValues = statValues;
         this.itemType = itemType;
+        if (statusAilmentChance > 100)
+        {
+            this.statusAilmentChance = 100;
+        }
     }
 
-    public void UseItem()
+    /// <summary>
+    /// Add all stats from this item on the given unit.
+    /// </summary>
+    /// <param name="unit"></param>
+    /// <returns></returns>
+    public bool EquipItem(UnitStats unit)
     {
+        if (itemType != ItemType.EQUIPPABLE)
+        {
+            return false;
+        }
+        return unit.AddEquipmentStatChanges(this);
+    }
+
+    /// <summary>
+    /// Remove all stats from this item on the given unit.
+    /// </summary>
+    /// <param name="unit"></param>
+    /// <returns></returns>
+    public bool UnequipItem(UnitStats unit)
+    {
+        if (itemType != ItemType.EQUIPPABLE)
+        {
+            return false;
+        }
+        return unit.ReduceEquipmentStatChanges(this);
+    }
+
+    /// <summary>
+    /// Use this item on the given unit.
+    /// </summary>
+    /// <param name="unit"></param>
+    public bool UseItem(UnitStats unit)
+    {
+        bool usedForSomething = false;
+        if (itemType == ItemType.EQUIPPABLE)
+        {
+            return usedForSomething;
+        }
         if (statusAilments.Count > 0)
         {
-            if (statusAilmentChance > 0)
-            {
-
-            }
+            usedForSomething |= unit.AddStatusAilments(this);
         }
+        if (statusAilmentRecovery.Count > 0)
+        {
+            usedForSomething |= unit.RemoveStatusAilments(this);
+        }
+        if (statValues.Count > 0)
+        {
+            usedForSomething |= unit.AddStatChanges(this);
+        }
+        return usedForSomething;
+    }
+
+    /// <summary>
+    /// Return if the Status Ailment Chance is successful.
+    /// </summary>
+    /// <returns></returns>
+    public bool StatusAilmentChanceSuccessful()
+    {
+        int chance = UnityEngine.Random.Range(0, 100);
+        return chance <= statusAilmentChance;
     }
 
     /// <summary>
@@ -97,110 +166,29 @@ public class Item : BaseItem
     }
 
     /// <summary>
-    /// Use all Stat Changes associated with this Item.
+    /// Return list of Stat Effects this Item can apply to the target.
     /// </summary>
-    /// <param name="statValues"></param>
-    private void AddStatChanges(Dictionary<StatEffectType, int> statValues)
+    /// <returns></returns>
+    public Dictionary<StatEffectType, int> GetStatValues()
     {
-        Dictionary<StatEffectType, int>.KeyCollection keys = statValues.Keys;
-        foreach (StatEffectType key in keys)
-        {
-            switch (key)
-            {
-                case StatEffectType.POWER:
-                    continue;
-                case StatEffectType.HEALTH_MAX:
-                    continue;
-                case StatEffectType.MANA_MAX:
-                    continue;
-                case StatEffectType.HEALTH_CURRENT:
-                    continue;
-                case StatEffectType.MANA_CURRENT:
-                    continue;
-                case StatEffectType.ATTACK_PHYSICAL:
-                    if (IsEquipment())
-                    {
-
-                    }
-                    else
-                    {
-
-                    }
-                    continue;
-                case StatEffectType.ATTACK_SPECIAL:
-                    if (IsEquipment())
-                    {
-
-                    }
-                    else
-                    {
-
-                    }
-                    continue;
-                case StatEffectType.DEFENSE_PHYSICAL:
-                    if (IsEquipment())
-                    {
-
-                    }
-                    else
-                    {
-
-                    }
-                    continue;
-                case StatEffectType.DEFENSE_SPECIAL:
-                    if (IsEquipment())
-                    {
-
-                    }
-                    else
-                    {
-
-                    }
-                    continue;
-                case StatEffectType.LUCK:
-                    if (IsEquipment())
-                    {
-
-                    }
-                    else
-                    {
-
-                    }
-                    continue;
-            }
-        }
+        return statValues;
     }
 
     /// <summary>
-    /// Use all Status Ailments associated with this Item.
+    /// Return list of Status Ailments this Item can inflict on the target.
     /// </summary>
-    /// <param name="statusAilments"></param>
-    private void UseStatusAilments(Dictionary<UnitStats.StatusAilment, int> statusAilments)
+    /// <returns></returns>
+    public List<UnitStats.StatusAilment> GetStatusAilments()
     {
-        Dictionary<UnitStats.StatusAilment, int>.KeyCollection keys = statusAilments.Keys;
-        foreach (UnitStats.StatusAilment key in keys)
-        {
-            switch (key)
-            {
-                case UnitStats.StatusAilment.HEARTY:
-                    continue;
-                case UnitStats.StatusAilment.STUNNED:
-                    continue;
-                case UnitStats.StatusAilment.ASLEEP:
-                    continue;
-                case UnitStats.StatusAilment.CONFUSED:
-                    continue;
-                case UnitStats.StatusAilment.PARALYZED:
-                    continue;
-                case UnitStats.StatusAilment.FRIGHTENED:
-                    continue;
-                case UnitStats.StatusAilment.ENRAGED:
-                    continue;
-                case UnitStats.StatusAilment.POISONED:
-                    continue;
-                case UnitStats.StatusAilment.EXHAUSTED:
-                    continue;
-            }
-        }
+        return statusAilments;
+    }
+
+    /// <summary>
+    /// Return list of Status Ailments this Item can recover from the target.
+    /// </summary>
+    /// <returns></returns>
+    public List<UnitStats.StatusAilment> GetStatusAilmentsRecovery()
+    {
+        return statusAilmentRecovery;
     }
 }

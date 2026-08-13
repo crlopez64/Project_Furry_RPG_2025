@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using static BaseItem;
 
 /// <summary>
 /// A Unit's stats if they can be fought.
@@ -31,6 +32,8 @@ public class UnitStats : MonoBehaviour
     /// </summary>
     public enum StatType
     {
+        MAX_HEALTH,
+        MAX_MANA,
         ATTACK_PHYSICAL,
         DEFENSE_PHYSICAL,
         ATTACK_SPECIAL,
@@ -129,6 +132,81 @@ public class UnitStats : MonoBehaviour
     }
 
     /// <summary>
+    /// Add all Status Ailments from an Item to this Unit. Skips any Status Ailments that are already on this Unit.
+    /// Return false if no Status Ailments were added, true if at least 1 Status Ailment was added.
+    /// </summary>
+    /// <param name="item"></param>
+    public bool AddStatusAilments(Item item)
+    {
+        bool usedForSomething = false;
+        foreach (StatusAilment statusAilment in item.GetStatusAilments())
+        {
+            if (statusAilment == StatusAilment.NONE)
+            {
+                continue;
+            }
+            if (statusAilments.Contains(statusAilment))
+            {
+                continue;
+            }
+            statusAilments.Add(statusAilment);
+            usedForSomething = true;
+        }
+        return usedForSomething;
+    }
+
+    /// <summary>
+    /// Remove all Status Ailments from an Item to this Unit. Skips any Status Ailments that are not on this Unit.
+    /// Return false if no Status Ailments were removed, true if at least 1 Status Ailment was removed.
+    /// </summary>
+    /// <param name="item"></param>
+    public bool RemoveStatusAilments(Item item)
+    {
+        bool usedForSomething = false;
+        foreach (StatusAilment statusAilment in item.GetStatusAilmentsRecovery())
+        {
+            if (statusAilment == StatusAilment.NONE)
+            {
+                continue;
+            }
+            if (!statusAilments.Contains(statusAilment))
+            {
+                continue;
+            }
+            statusAilments.Remove(statusAilment);
+            usedForSomething = true;
+        }
+        return usedForSomething;
+    }
+
+    /// <summary>
+    /// Set this Unit's stats.
+    /// </summary>
+    /// <param name="statLevel"></param>
+    /// <param name="statMaxHealth"></param>
+    /// <param name="statMaxMana"></param>
+    /// <param name="statAttackPhysical"></param>
+    /// <param name="statDefensePhysical"></param>
+    /// <param name="statAttackSpecial"></param>
+    /// <param name="statDefenseSpecial"></param>
+    /// <param name="statSpeed"></param>
+    /// <param name="statLuck"></param>
+    public void SetStatValues(byte statLevel, int statMaxHealth, int statMaxMana, int statAttackPhysical, int statDefensePhysical, int statAttackSpecial, int statDefenseSpecial, int statSpeed, int statLuck)
+    {
+        this.statLevel = statLevel;
+        this.statMaxHealth = statMaxHealth;
+        this.statMaxMana = statMaxMana;
+        this.statAttackPhysical = statAttackPhysical;
+        this.statDefensePhysical = statDefensePhysical;
+        this.statAttackSpecial = statAttackSpecial;
+        this.statDefenseSpecial = statDefenseSpecial;
+        this.statSpeed = statSpeed;
+        this.statLuck = statLuck;
+        currentHealth = statMaxHealth;
+        currentMana = statMaxMana;
+    }
+
+    /// <summary>
     /// Get this Unit's name.
     /// </summary>
     /// <returns></returns>
@@ -217,59 +295,32 @@ public class UnitStats : MonoBehaviour
     {
         return luckLevel;
     }
-    
-    /// <summary>
-    /// Return this Unit's Physical Attack Stat.
-    /// </summary>
-    /// <returns></returns>
-    public int GetStatAttackPhysical()
-    {
-        return statAttackPhysical;
-    }
 
     /// <summary>
-    /// Return this Unit's Physical Defense Stat.
+    /// Return this Unit's stat value based off of the StatType given.
     /// </summary>
+    /// <param name="statType"></param>
     /// <returns></returns>
-    public int GetStatDefensePhysical()
+    /// <exception cref="ArgumentOutOfRangeException"></exception>
+    public virtual int GetStatValue(StatType statType)
     {
-        return statDefensePhysical;
-    }
-
-    /// <summary>
-    /// Return this Unit's Special Attack Stat.
-    /// </summary>
-    /// <returns></returns>
-    public int GetStatAttackSpecial()
-    {
-        return statAttackSpecial;
-    }
-
-    /// <summary>
-    /// Return this Unit's Special Defense Stat.
-    /// </summary>
-    /// <returns></returns>
-    public int GetStatDefenseSpecial()
-    {
-        return statDefenseSpecial;
-    }
-
-    /// <summary>
-    /// Return this Unit's Speed Stat.
-    /// </summary>
-    /// <returns></returns>
-    public int GetStatSpeed()
-    {
-        return statSpeed;
-    }
-
-    /// <summary>
-    /// Return this Unit's Luck Stat.
-    /// </summary>
-    /// <returns></returns>
-    public int GetStatLuck()
-    {
-        return statLuck;
+        switch (statType)
+        {
+            case StatType.ATTACK_PHYSICAL:
+                return statAttackPhysical;
+            case StatType.DEFENSE_PHYSICAL:
+                return statDefensePhysical;
+            case StatType.ATTACK_SPECIAL:
+                return statAttackSpecial;
+            case StatType.DEFENSE_SPECIAL:
+                return statDefenseSpecial;
+            case StatType.SPEED:
+                return statSpeed;
+            case StatType.LUCK:
+                return statLuck;
+            default:
+                throw new ArgumentOutOfRangeException(nameof(statType), statType, null);
+        }
     }
 
     /// <summary>
@@ -336,10 +387,256 @@ public class UnitStats : MonoBehaviour
     }
 
     /// <summary>
+    /// Add all Stat Changes from an Equippable Item to this Unit. Skips any Stat Changes that are not applicable to this Unit.
+    /// </summary>
+    /// <param name="item"></param>
+    /// <returns></returns>
+    public bool AddEquipmentStatChanges(Item item)
+    {
+        if (!item.IsEquipment())
+        {
+            return false;
+        }
+        Dictionary<StatEffectType, int>.KeyCollection keys = item.GetStatValues().Keys;
+        HeroStats hero = GetComponent<HeroStats>();
+        bool usedForSomething = false;
+        foreach (StatEffectType key in keys)
+        {
+            switch (key)
+            {
+                case StatEffectType.POWER:
+                    // Equipment should not change Power to Attacks
+                    continue;
+                case StatEffectType.HEALTH_MAX:
+                    hero.AddEquipStatValue(StatType.MAX_HEALTH, item.GetStatValues().GetValueOrDefault(key));
+                    usedForSomething = true;
+                    continue;
+                case StatEffectType.MANA_MAX:
+                    hero.AddEquipStatValue(StatType.MAX_MANA, item.GetStatValues().GetValueOrDefault(key));
+                    usedForSomething = true;
+                    continue;
+                case StatEffectType.HEALTH_CURRENT:
+                    // Equipment should not change current health
+                    continue;
+                case StatEffectType.MANA_CURRENT:
+                    // Equipment should not change current mana
+                    continue;
+                case StatEffectType.ATTACK_PHYSICAL:
+                    hero.AddEquipStatValue(StatType.ATTACK_PHYSICAL, item.GetStatValues().GetValueOrDefault(key));
+                    usedForSomething = true;
+                    continue;
+                case StatEffectType.ATTACK_SPECIAL:
+                    hero.AddEquipStatValue(StatType.ATTACK_SPECIAL, item.GetStatValues().GetValueOrDefault(key));
+                    usedForSomething = true;
+                    continue;
+                case StatEffectType.DEFENSE_PHYSICAL:
+                    hero.AddEquipStatValue(StatType.DEFENSE_PHYSICAL, item.GetStatValues().GetValueOrDefault(key));
+                    usedForSomething = true;
+                    continue;
+                case StatEffectType.DEFENSE_SPECIAL:
+                    hero.AddEquipStatValue(StatType.DEFENSE_SPECIAL, item.GetStatValues().GetValueOrDefault(key));
+                    usedForSomething = true;
+                    continue;
+                case StatEffectType.LUCK:
+                    hero.AddEquipStatValue(StatType.LUCK, item.GetStatValues().GetValueOrDefault(key));
+                    usedForSomething = true;
+                    continue;
+            }
+        }
+        return usedForSomething;
+    }
+
+    /// <summary>
+    /// Remove all Stat Changes from an Equippable Item to this Unit. Skips any Stat Changes that are not applicable to this Unit.
+    /// </summary>
+    /// <param name="item"></param>
+    /// <returns></returns>
+    public bool ReduceEquipmentStatChanges(Item item)
+    {
+        if (!item.IsEquipment())
+        {
+            return false;
+        }
+        Dictionary<StatEffectType, int>.KeyCollection keys = item.GetStatValues().Keys;
+        HeroStats hero = GetComponent<HeroStats>();
+        bool usedForSomething = false;
+        foreach (StatEffectType key in keys)
+        {
+            switch (key)
+            {
+                case StatEffectType.POWER:
+                    // Equipment should not change Power to Attacks
+                    continue;
+                case StatEffectType.HEALTH_MAX:
+                    hero.ReduceEquipStatValue(StatType.MAX_HEALTH, item.GetStatValues().GetValueOrDefault(key));
+                    usedForSomething = true;
+                    continue;
+                case StatEffectType.MANA_MAX:
+                    hero.ReduceEquipStatValue(StatType.MAX_MANA, item.GetStatValues().GetValueOrDefault(key));
+                    usedForSomething = true;
+                    continue;
+                case StatEffectType.HEALTH_CURRENT:
+                    // Equipment should not change current health
+                    continue;
+                case StatEffectType.MANA_CURRENT:
+                    // Equipment should not change current mana
+                    continue;
+                case StatEffectType.ATTACK_PHYSICAL:
+                    hero.ReduceEquipStatValue(StatType.ATTACK_PHYSICAL, item.GetStatValues().GetValueOrDefault(key));
+                    usedForSomething = true;
+                    continue;
+                case StatEffectType.ATTACK_SPECIAL:
+                    hero.ReduceEquipStatValue(StatType.ATTACK_SPECIAL, item.GetStatValues().GetValueOrDefault(key));
+                    usedForSomething = true;
+                    continue;
+                case StatEffectType.DEFENSE_PHYSICAL:
+                    hero.ReduceEquipStatValue(StatType.DEFENSE_PHYSICAL, item.GetStatValues().GetValueOrDefault(key));
+                    usedForSomething = true;
+                    continue;
+                case StatEffectType.DEFENSE_SPECIAL:
+                    hero.ReduceEquipStatValue(StatType.DEFENSE_SPECIAL, item.GetStatValues().GetValueOrDefault(key));
+                    usedForSomething = true;
+                    continue;
+                case StatEffectType.LUCK:
+                    hero.ReduceEquipStatValue(StatType.LUCK, item.GetStatValues().GetValueOrDefault(key));
+                    usedForSomething = true;
+                    continue;
+            }
+        }
+        return usedForSomething;
+    }
+
+    /// <summary>
+    /// Use all Stat Changes associated with this Item. Return false if no Stat Changes were used, or Equip.
+    /// </summary>
+    /// <param name="item"></param>
+    /// <returns></returns>
+    public bool AddStatChanges(Item item)
+    {
+        if (item.IsEquipment())
+        {
+            return false;
+        }
+        Dictionary<StatEffectType, int>.KeyCollection keys = item.GetStatValues().Keys;
+        HeroStats hero = GetComponent<HeroStats>();
+        bool usedForSomething = false;
+        foreach (StatEffectType key in keys)
+        {
+            switch (key)
+            {
+                case StatEffectType.POWER:
+                    // Power should not be changed by Items
+                    continue;
+                case StatEffectType.HEALTH_MAX:
+                    if (hero != null)
+                    {
+                        hero.AddPermBonusStatValue(StatType.MAX_HEALTH, item.GetStatValues().GetValueOrDefault(key));
+                        usedForSomething = true;
+                    }
+                    continue;
+                case StatEffectType.MANA_MAX:
+                    if (hero != null)
+                    {
+                        hero.AddPermBonusStatValue(StatType.MAX_MANA, item.GetStatValues().GetValueOrDefault(key));
+                        usedForSomething = true;
+                    }
+                    continue;
+                case StatEffectType.HEALTH_CURRENT:
+                    HealthRestore(item.GetStatValues().GetValueOrDefault(key));
+                    continue;
+                case StatEffectType.MANA_CURRENT:
+                    //TODO: Add ManaRestore() method to UnitStats and implement it here
+                    continue;
+                case StatEffectType.ATTACK_PHYSICAL:
+                    if (hero != null)
+                    {
+                        hero.AddPermBonusStatValue(StatType.ATTACK_PHYSICAL, item.GetStatValues().GetValueOrDefault(key));
+                        usedForSomething = true;
+                    }
+                    continue;
+                case StatEffectType.ATTACK_SPECIAL:
+                    if (hero != null)
+                    {
+                        hero.AddPermBonusStatValue(StatType.ATTACK_SPECIAL, item.GetStatValues().GetValueOrDefault(key));
+                        usedForSomething = true;
+                    }
+                    continue;
+                case StatEffectType.DEFENSE_PHYSICAL:
+                    if (hero != null)
+                    {
+                        hero.AddPermBonusStatValue(StatType.DEFENSE_PHYSICAL, item.GetStatValues().GetValueOrDefault(key));
+                        usedForSomething = true;
+                    }
+                    continue;
+                case StatEffectType.DEFENSE_SPECIAL:
+                    if (hero != null)
+                    {
+                        hero.AddPermBonusStatValue(StatType.DEFENSE_SPECIAL, item.GetStatValues().GetValueOrDefault(key));
+                        usedForSomething = true;
+                    }
+                    continue;
+                case StatEffectType.LUCK:
+                    if (hero != null)
+                    {
+                        hero.AddPermBonusStatValue(StatType.LUCK, item.GetStatValues().GetValueOrDefault(key));
+                        usedForSomething = true;
+                    }
+                    continue;
+            }
+        }
+        return usedForSomething;
+    }
+
+    /// <summary>
+    /// Use all Stat Changes associated with this Item. Return false if no Stat Changes were used, or Equip.
+    /// </summary>
+    /// <param name="item"></param>
+    /// <returns></returns>
+    public bool ReduceStatChanges(Item item)
+    {
+        if (item.IsEquipment())
+        {
+            return false;
+        }
+        Dictionary<StatEffectType, int>.KeyCollection keys = item.GetStatValues().Keys;
+        bool usedForSomething = false;
+        foreach (StatEffectType key in keys)
+        {
+            if (key == StatEffectType.HEALTH_CURRENT)
+            {
+                TakeDamage(item.GetStatValues().GetValueOrDefault(key));
+                usedForSomething = true;
+                continue;
+            }
+            if (key == StatEffectType.MANA_CURRENT)
+            {
+                //TODO: Add ManaRestore() method to UnitStats and implement it here
+                usedForSomething = true;
+                continue;
+            }
+        }
+        return usedForSomething;
+    }
+
+    /// <summary>
+    /// Take in this much damage immediately.
+    /// </summary>
+    /// <param name="staticDamage"></param>
+    public void TakeDamage(int staticDamage)
+    {
+        Debug.Log("taking damage!!");
+        currentHealth -= staticDamage;
+        if (currentHealth < 0)
+        {
+            currentHealth = 0;
+        }
+    }
+
+    /// <summary>
     /// Take in this much damage immediately.
     /// </summary>
     /// <param name="baseDamage"></param>
-    /// <param name="opponentAttackStat"></param>
+    /// <param name="opponentStats"></param>
     /// <param name="statType"></param>
     public virtual void TakeDamage(int baseDamage, UnitStats opponentStats, StatType statType)
     {
@@ -360,6 +657,7 @@ public class UnitStats : MonoBehaviour
     /// <param name="statType"></param>
     public virtual void TakeDamageGuaranteeLuck(int baseDamage, UnitStats opponentStats, StatType statType)
     {
+        Debug.Log("taking damage!!");
         int reducedDamage = (int)(baseDamage * UnityEngine.Random.Range(0.75f, 0.95f));
         currentHealth -= CalculateDamage(reducedDamage, opponentStats, statType);
         if (currentHealth < 0)
@@ -381,10 +679,46 @@ public class UnitStats : MonoBehaviour
     }
 
     /// <summary>
+    /// Return the front-end stat value based off of the base stat value and the Unit's level.
+    /// </summary>
+    /// <param name="statType"></param>
+    /// <returns></returns>
+    protected int GetStatFromWorkingAlgorithm(StatType statType)
+    {
+        int statValue = 1;
+        switch (statType)
+        {
+            case StatType.ATTACK_PHYSICAL:
+                statValue = statAttackPhysical;
+                break;
+            case StatType.DEFENSE_PHYSICAL:
+                statValue = statDefensePhysical;
+                break;
+            case StatType.ATTACK_SPECIAL:
+                statValue = statAttackSpecial;
+                break;
+            case StatType.DEFENSE_SPECIAL:
+                statValue = statDefenseSpecial;
+                break;
+            case StatType.SPEED:
+                statValue = statSpeed;
+                break;
+            case StatType.LUCK:
+                statValue = statLuck;
+                break;
+            default:
+                Debug.LogError("ERROR: Unit using an illegal stat type.");
+                break;
+        }
+        int workingAlgorithmOutput = Mathf.FloorToInt((2 * Mathf.Clamp(statValue, 5, 100) * statLevel) / 50) + 5;
+        return workingAlgorithmOutput;
+    }
+
+    /// <summary>
     /// Calculate damage to receive.
     /// </summary>
     /// <param name="baseDamage"></param>
-    /// <param name="opponentAttackStat"></param>
+    /// <param name="opponentStats"></param>
     /// <param name="statType"></param>
     /// <returns></returns>
     protected int CalculateDamage(int baseDamage, UnitStats opponentStats, StatType statType)
@@ -400,7 +734,7 @@ public class UnitStats : MonoBehaviour
                 }
                 else
                 {
-                    Debug.Log("DMG Calc: " + baseDamage + ", " + opponentStats.GetStatAttackPhysical() + ", " + statType);
+                    Debug.Log("DMG Calc: " + baseDamage + ", " + opponentStats.GetStatValue(StatType.ATTACK_PHYSICAL) + ", " + statType);
                 }
                 break;
             case StatType.ATTACK_SPECIAL:
@@ -411,7 +745,7 @@ public class UnitStats : MonoBehaviour
                 }
                 else
                 {
-                    Debug.Log("DMG Calc: " + baseDamage + ", " + opponentStats.GetStatAttackSpecial() + ", " + statType);
+                    Debug.Log("DMG Calc: " + baseDamage + ", " + opponentStats.GetStatValue(StatType.ATTACK_SPECIAL) + ", " + statType);
                 }
                 break;
             default:

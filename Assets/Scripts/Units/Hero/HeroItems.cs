@@ -14,10 +14,6 @@ public class HeroItems : MonoBehaviour
         equipment = new Item[6];
         personalInventory = new List<Item>(20);
     }
-    private void Start()
-    {
-        
-    }
 
     /// <summary>
     /// Set this Hero's equipment.
