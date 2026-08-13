@@ -5,6 +5,7 @@ using UnityEngine;
 /// </summary>
 public class EnemyAttack : UnitAttack
 {
+
     public override void Awake()
     {
         base.Awake();
@@ -13,13 +14,26 @@ public class EnemyAttack : UnitAttack
     /// <summary>
     /// Retrieve the appropriate Attack List.
     /// </summary>
-    public virtual void AddEnemyMoveList()
+    public virtual void AddEnemyMoveList(string enemyName)
     {
-        if (attackList != null)
+        attackList = EnemyMoveListIndex.GetEnemyMoveList(enemyName);
+    }
+
+    /// <summary>
+    /// Add the base stats for the enemy.
+    /// </summary>
+    /// <param name="enemyName"></param>
+    /// <param name="statLevel"></param>
+    public void AddEnemyBaseStats(string enemyName, byte statLevel)
+    {
+        EnemyStats enemyStats = GetComponent<EnemyStats>();
+        if (enemyStats == null)
         {
+            Debug.LogError("ERROR: Could not find Enemy Stats!!");
             return;
         }
-        attackList = EnemyAttackListIndex.GetEnemyAttackList("Test");
+        enemyStats.SetUnitName(enemyName);
+        enemyStats.SetBaseStats(statLevel, EnemyBaseStatsIndex.GetEnemyBaseStats(enemyName));
     }
 
     /// <summary>

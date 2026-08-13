@@ -3,12 +3,12 @@ using UnityEngine;
 using static UnitStats;
 
 /// <summary>
-/// Create a sample Enemy Attack List.
+/// Create a Move List for Enemy "Sample Enemy".
 /// </summary>
-public class SampleEnemyAttack : MoveList
+public class SampleEnemyMoveList : MoveList
 {
     
-    public SampleEnemyAttack() : base()
+    public SampleEnemyMoveList() : base()
     {
         moveList.Add(new Attack(1, "Single Slash", "A short and simple slash attack.", 0, 0, BaseItem.IntendedTarget.ENEMY_ONE, UnitType.NORMAL,
             new AttackStep[] {

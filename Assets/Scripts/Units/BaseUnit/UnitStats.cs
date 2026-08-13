@@ -26,7 +26,14 @@ public class UnitStats : MonoBehaviour
     protected int statDefenseSpecial = 0;
     protected int statSpeed = 0;
     protected int statLuck = 0;
-
+    protected int baseStatMaxHealth = 0;
+    protected int baseStatMaxMana = 0;
+    protected int baseStatAttackPhysical = 0;
+    protected int baseStatDefensePhysical = 0;
+    protected int baseStatAttackSpecial = 0;
+    protected int baseStatDefenseSpecial = 0;
+    protected int baseStatSpeed = 0;
+    
     /// <summary>
     /// For referencing Stats if needed.
     /// </summary>
@@ -204,6 +211,44 @@ public class UnitStats : MonoBehaviour
         this.statLuck = statLuck;
         currentHealth = statMaxHealth;
         currentMana = statMaxMana;
+    }
+
+    /// <summary>
+    /// Set this Unit's base stats. Once done, can run algorithm to get front-end stats.
+    /// List in order: HP, Mana, Physical Attack, Physical Defense, Special Attack, Special Defense, Speed
+    /// </summary>
+    /// <param name="statLevel"></param>
+    /// <param name="baseStats"></param>
+    public void SetBaseStats(byte statLevel, List<int> baseStats)
+    {
+        this.statLevel = statLevel;
+        baseStatMaxHealth = baseStats[0];
+        baseStatMaxMana = baseStats[1];
+        baseStatAttackPhysical = baseStats[2];
+        baseStatDefensePhysical = baseStats[3];
+        baseStatAttackSpecial = baseStats[4];
+        baseStatDefenseSpecial = baseStats[5];
+        baseStatSpeed = baseStats[6];
+    }
+
+    /// <summary>
+    /// Run the algorithm to get front-end stats from base stats.
+    /// </summary>
+    public void GetFinalStats()
+    {
+        if (statLevel == 0)
+        {
+            Debug.LogWarning("NOTE: StatLevel is 0. Cancelling rest of stats.");
+            return;
+        }
+        statMaxHealth = baseStatMaxHealth;
+        statMaxMana = baseStatMaxMana;
+        statAttackPhysical = GetStatFromWorkingAlgorithm(StatType.ATTACK_PHYSICAL);
+        statDefensePhysical = GetStatFromWorkingAlgorithm(StatType.DEFENSE_PHYSICAL);
+        statAttackSpecial = GetStatFromWorkingAlgorithm(StatType.ATTACK_SPECIAL);
+        statDefenseSpecial = GetStatFromWorkingAlgorithm(StatType.DEFENSE_SPECIAL);
+        statSpeed = GetStatFromWorkingAlgorithm(StatType.SPEED);
+        statLuck = GetStatFromWorkingAlgorithm(StatType.LUCK);
     }
 
     /// <summary>

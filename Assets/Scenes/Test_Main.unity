@@ -3446,6 +3446,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::EnemyOverworld
   enemyName: Sample Enemy
   enemyAttackScriptName: Test
+  enemyLevel: 24
 --- !u!1 &1011166711
 GameObject:
   m_ObjectHideFlags: 0

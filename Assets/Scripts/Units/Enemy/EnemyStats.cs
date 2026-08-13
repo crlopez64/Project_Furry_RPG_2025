@@ -6,13 +6,14 @@ using UnityEngine;
 /// </summary>
 public class EnemyStats : UnitStats
 {
-    private int experienceReward;
+    private int baseExperienceReward;
 
     public int setExperienceReward;
 
     private void Awake()
     {
-        experienceReward = setExperienceReward;
+        //TODO: Get final baseExperience based on the Enemy's level and other factors.
+        baseExperienceReward = setExperienceReward;
         statusAilments = new List<StatusAilment>();
     }
 
@@ -22,6 +23,6 @@ public class EnemyStats : UnitStats
     /// <returns></returns>
     public int GetExperienceReward()
     {
-        return experienceReward;
+        return baseExperienceReward;
     }
 }

@@ -14,4 +14,9 @@ public class EnemyOverworld : MonoBehaviour
     /// The back-end name for script searching for this enemy.
     /// </summary>
     public string enemyAttackScriptName;
+
+    /// <summary>
+    /// The level of this enemy.
+    /// </summary>
+    public byte enemyLevel;
 }
