@@ -187,30 +187,23 @@ public class UnitStats : MonoBehaviour
     }
 
     /// <summary>
-    /// Set this Unit's stats.
+    /// Hardcode this Unit's front-end stats.
     /// </summary>
-    /// <param name="statLevel"></param>
-    /// <param name="statMaxHealth"></param>
-    /// <param name="statMaxMana"></param>
-    /// <param name="statAttackPhysical"></param>
-    /// <param name="statDefensePhysical"></param>
-    /// <param name="statAttackSpecial"></param>
-    /// <param name="statDefenseSpecial"></param>
-    /// <param name="statSpeed"></param>
-    /// <param name="statLuck"></param>
-    public void SetStatValues(byte statLevel, int statMaxHealth, int statMaxMana, int statAttackPhysical, int statDefensePhysical, int statAttackSpecial, int statDefenseSpecial, int statSpeed, int statLuck)
+    /// <param name="frontEndStats"></param>
+    /// <param name="currentHealth"></param>
+    /// <param name="currentMana"></param>
+    public void SetStatValues(int[] frontEndStats, int currentHealth, int currentMana)
     {
-        this.statLevel = statLevel;
-        this.statMaxHealth = statMaxHealth;
-        this.statMaxMana = statMaxMana;
-        this.statAttackPhysical = statAttackPhysical;
-        this.statDefensePhysical = statDefensePhysical;
-        this.statAttackSpecial = statAttackSpecial;
-        this.statDefenseSpecial = statDefenseSpecial;
-        this.statSpeed = statSpeed;
-        this.statLuck = statLuck;
-        currentHealth = statMaxHealth;
-        currentMana = statMaxMana;
+        statMaxHealth = frontEndStats[0];
+        statMaxMana = frontEndStats[1];
+        statAttackPhysical = frontEndStats[2];
+        statDefensePhysical = frontEndStats[3];
+        statAttackSpecial = frontEndStats[4];
+        statDefenseSpecial = frontEndStats[5];
+        statSpeed = frontEndStats[6];
+        statLuck = 0;
+        this.currentHealth = statMaxHealth;
+        this.currentMana = statMaxMana;
     }
 
     /// <summary>
@@ -219,7 +212,7 @@ public class UnitStats : MonoBehaviour
     /// </summary>
     /// <param name="statLevel"></param>
     /// <param name="baseStats"></param>
-    public void SetBaseStats(byte statLevel, List<int> baseStats)
+    public void SetBaseStatsAndFrontEndStats(byte statLevel, int[] baseStats)
     {
         this.statLevel = statLevel;
         baseStatMaxHealth = baseStats[0];
@@ -229,12 +222,14 @@ public class UnitStats : MonoBehaviour
         baseStatAttackSpecial = baseStats[4];
         baseStatDefenseSpecial = baseStats[5];
         baseStatSpeed = baseStats[6];
+        GetFinalStats();
     }
 
     /// <summary>
     /// Run the algorithm to get front-end stats from base stats.
+    /// Excludes bonus stats.
     /// </summary>
-    public void GetFinalStats()
+    protected void GetFinalStats()
     {
         if (statLevel == 0)
         {
@@ -351,6 +346,10 @@ public class UnitStats : MonoBehaviour
     {
         switch (statType)
         {
+            case StatType.MAX_HEALTH:
+                return statMaxHealth;
+            case StatType.MAX_MANA:
+                return statMaxMana;
             case StatType.ATTACK_PHYSICAL:
                 return statAttackPhysical;
             case StatType.DEFENSE_PHYSICAL:
@@ -361,6 +360,37 @@ public class UnitStats : MonoBehaviour
                 return statDefenseSpecial;
             case StatType.SPEED:
                 return statSpeed;
+            case StatType.LUCK:
+                return statLuck;
+            default:
+                throw new ArgumentOutOfRangeException(nameof(statType), statType, null);
+        }
+    }
+
+    /// <summary>
+    /// Return this Unit's bsae stat value based off of the StatType given.
+    /// </summary>
+    /// <param name="statType"></param>
+    /// <returns></returns>
+    /// <exception cref="ArgumentOutOfRangeException"></exception>
+    public int GetBaseStatValue(StatType statType)
+    {
+        switch (statType)
+        {
+            case StatType.MAX_HEALTH:
+                return baseStatMaxHealth;
+            case StatType.MAX_MANA:
+                return baseStatMaxMana;
+            case StatType.ATTACK_PHYSICAL:
+                return baseStatAttackPhysical;
+            case StatType.DEFENSE_PHYSICAL:
+                return baseStatDefensePhysical;
+            case StatType.ATTACK_SPECIAL:
+                return baseStatAttackSpecial;
+            case StatType.DEFENSE_SPECIAL:
+                return baseStatDefenseSpecial;
+            case StatType.SPEED:
+                return baseStatSpeed;
             case StatType.LUCK:
                 return statLuck;
             default:
@@ -725,6 +755,7 @@ public class UnitStats : MonoBehaviour
 
     /// <summary>
     /// Return the front-end stat value based off of the base stat value and the Unit's level.
+    /// Excludes bonus stat values.
     /// </summary>
     /// <param name="statType"></param>
     /// <returns></returns>
@@ -734,19 +765,19 @@ public class UnitStats : MonoBehaviour
         switch (statType)
         {
             case StatType.ATTACK_PHYSICAL:
-                statValue = statAttackPhysical;
+                statValue = baseStatAttackPhysical;
                 break;
             case StatType.DEFENSE_PHYSICAL:
-                statValue = statDefensePhysical;
+                statValue = baseStatDefensePhysical;
                 break;
             case StatType.ATTACK_SPECIAL:
-                statValue = statAttackSpecial;
+                statValue = baseStatAttackSpecial;
                 break;
             case StatType.DEFENSE_SPECIAL:
-                statValue = statDefenseSpecial;
+                statValue = baseStatDefenseSpecial;
                 break;
             case StatType.SPEED:
-                statValue = statSpeed;
+                statValue = baseStatSpeed;
                 break;
             case StatType.LUCK:
                 statValue = statLuck;

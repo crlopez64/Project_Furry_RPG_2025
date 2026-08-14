@@ -13,6 +13,8 @@ public class UnitAttack : MonoBehaviour
     protected MoveList skillsList;
     protected Vector3 originalPosition;
 
+    protected bool hasAttackList;
+
     public virtual void Awake()
     {
         battleManager = FindAnyObjectByType<BattleManager>();

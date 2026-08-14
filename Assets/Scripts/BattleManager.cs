@@ -369,6 +369,10 @@ public class BattleManager : MonoBehaviour
             ThenBy(unit => unit.GetComponent<UnitStats>().GetStatValue(UnitStats.StatType.ATTACK_SPECIAL)).
             ThenBy(unit => unit.GetComponent<UnitStats>().GetStatValue(UnitStats.StatType.ATTACK_PHYSICAL)).ToList();
         turnOrder = new Queue<GameObject>(everyone);
+        if (turnOrder.Peek().GetComponent<EnemyStats>() != null)
+        {
+            Debug.LogWarning("NOTE: Enemy is first in turn order.");
+        }
     }
 
     /// <summary>
@@ -511,7 +515,7 @@ public class BattleManager : MonoBehaviour
     public void PrepareItem(Item item, UnitAttack[] targetsToUseBaseItem)
     {
         this.targetsToUseBaseItem = targetsToUseBaseItem;
-        Debug.Log("Use item!!");
+        Debug.Log("Use item: " + item.GetItemName());
     }
 
     /// <summary>

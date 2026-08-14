@@ -7,12 +7,14 @@ using UnityEngine;
 /// </summary>
 [RequireComponent(typeof(UnitMove))]
 [RequireComponent(typeof(EnemyStats))]
+[RequireComponent(typeof(EnemyAttack))]
 [RequireComponent(typeof(Rigidbody2D))]
 [RequireComponent(typeof(BoxCollider2D))]
 public class EnemyUnitHolder : MonoBehaviour
 {
     //private RuntimeAnimatorController controller;
     private EnemyStats enemyStats;
+    private EnemyAttack enemyAttack;
 
     private void Awake()
     {
@@ -22,6 +24,11 @@ public class EnemyUnitHolder : MonoBehaviour
         {
             Debug.LogError("ERROR: Could not find Enemy Stats!!");
         }
+        enemyAttack = GetComponent<EnemyAttack>();
+        if (enemyAttack == null)
+        {
+            Debug.LogError("ERROR: Could not find Enemy Attack!!");
+        }
     }
     
     /// <summary>
@@ -29,8 +36,9 @@ public class EnemyUnitHolder : MonoBehaviour
     /// </summary>
     public void CreateEnemy(string enemyName, string enemyCode)
     {
-        // On Component Spawn, that will create the move list for that Enemy
+        Debug.Log("Creating Enemy: " + enemyName + ", with code: " + enemyCode);
         enemyStats.SetUnitName(enemyName);
-        
+        enemyStats.SetBaseStatsAndFrontEndStats(32, EnemyBaseStatsIndex.GetEnemyBaseStats(enemyName));
+        enemyAttack.SetEnemyMoveList(enemyName, 32);
     }
 }

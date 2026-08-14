@@ -1,22 +1,16 @@
+using Unity.VisualScripting.Antlr3.Runtime.Collections;
 using UnityEngine;
 
 /// <summary>
 /// Script in charge of Enemy Attacks.
 /// </summary>
+[RequireComponent (typeof(EnemyStats))]
 public class EnemyAttack : UnitAttack
 {
-
+    
     public override void Awake()
     {
         base.Awake();
-    }
-
-    /// <summary>
-    /// Retrieve the appropriate Attack List.
-    /// </summary>
-    public virtual void AddEnemyMoveList(string enemyName)
-    {
-        attackList = EnemyMoveListIndex.GetEnemyMoveList(enemyName);
     }
 
     /// <summary>
@@ -24,7 +18,7 @@ public class EnemyAttack : UnitAttack
     /// </summary>
     /// <param name="enemyName"></param>
     /// <param name="statLevel"></param>
-    public void AddEnemyBaseStats(string enemyName, byte statLevel)
+    public void SetEnemyMoveList(string enemyName, byte statLevel)
     {
         EnemyStats enemyStats = GetComponent<EnemyStats>();
         if (enemyStats == null)
@@ -32,8 +26,8 @@ public class EnemyAttack : UnitAttack
             Debug.LogError("ERROR: Could not find Enemy Stats!!");
             return;
         }
-        enemyStats.SetUnitName(enemyName);
-        enemyStats.SetBaseStats(statLevel, EnemyBaseStatsIndex.GetEnemyBaseStats(enemyName));
+        attackList = EnemyMoveListIndex.GetEnemyMoveList(enemyName);
+        hasAttackList = attackList.GetMoveList().Count > 0;
     }
 
     /// <summary>

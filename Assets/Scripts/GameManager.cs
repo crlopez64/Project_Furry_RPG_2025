@@ -98,10 +98,10 @@ public class GameManager : MonoBehaviour
     /// Add the Enemy Name to eventually index in Battle Manager when scenes transition to Battle.
     /// </summary>
     /// <param name="enemyName"></param>
-    public static void AddEnemyToListToBattle(string enemyName, string enemyScriptCall)
+    public static void AddEnemyToListToBattle(string enemyName)
     {
         enemyNamesToBattle.Add(enemyName);
-        enemyScriptCallsToBattle.Add(enemyScriptCall);
+        enemyScriptCallsToBattle.Add(enemyName);
     }
 
     /// <summary>

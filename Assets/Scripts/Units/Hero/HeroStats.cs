@@ -40,13 +40,14 @@ public class HeroStats : UnitStats
     protected int statPermBonusSpeed = 0;
 
     public string setName;
+    public byte setLevel;
     public int setMaxHealth;
     public int setMaxMana;
-    public int setAttackPhysical;
-    public int setDefensePhysical;
-    public int setAttackSpecial;
-    public int setDefenseSpecial;
-    public int setSpeed;
+    public int setBaseAtkPhysical;
+    public int setBaseDefPhysical;
+    public int setBaseAtkSpecial;
+    public int setBaseDefSpecial;
+    public int setBaseSpeed;
     public int setLuck;
     [Range(1, 6)]
     public int setDamageRollerSpeed;
@@ -55,16 +56,18 @@ public class HeroStats : UnitStats
     {
         // Set testing Stats
         unitName = setName;
-        statMaxHealth = setMaxHealth;
+        statLevel = setLevel;
+        baseStatMaxHealth = setMaxHealth;
         currentHealth = setMaxHealth;
-        statMaxMana = setMaxMana;
+        baseStatMaxMana = setMaxMana;
         currentMana = setMaxMana;
-        statAttackPhysical = setAttackPhysical;
-        statDefensePhysical = setDefensePhysical;
-        statAttackSpecial = setAttackSpecial;
-        statDefenseSpecial = setDefenseSpecial;
-        statSpeed = setSpeed;
+        baseStatAttackPhysical = setBaseAtkPhysical;
+        baseStatDefensePhysical = setBaseDefPhysical;
+        baseStatAttackSpecial = setBaseAtkSpecial;
+        baseStatDefenseSpecial = setBaseDefSpecial;
+        baseStatSpeed = setBaseSpeed;
         statLuck = setLuck;
+        GetFinalStats();
         // Set the Health Estimate Roller
         currentHealthEstimate = currentHealth;
         trueCurrentHealthEstimate = currentHealth;

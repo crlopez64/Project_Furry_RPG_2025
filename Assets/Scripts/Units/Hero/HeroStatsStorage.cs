@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using UnityEngine.Rendering;
 using static UnitStats;
 
 /// <summary>
@@ -19,7 +20,14 @@ public class HeroStatsStorage
     protected int statDefenseSpecial = 0;
     protected int statSpeed = 0;
     protected int statLuck = 0;
-    
+    protected int baseMaxHealth = 0;
+    protected int baseMaxMana = 0;
+    protected int baseStatAttackPhysical = 0;
+    protected int baseStatDefensePhysical = 0;
+    protected int baseStatAttackSpecial = 0;
+    protected int baseStatDefenseSpecial = 0;
+    protected int baseStatSpeed = 0;
+
     /// <summary>
     /// Constructor via HeroStats.
     /// </summary>
@@ -30,6 +38,7 @@ public class HeroStatsStorage
         statLevel = heroStats.GetStatLevel();
         currentMana = heroStats.GetCurrentMana();
         currentHealth = heroStats.GetCurrentHealth();
+        // Final Stats
         statMaxMana = heroStats.GetMaxMana();
         statMaxHealth = heroStats.GetMaxHealth();
         statAttackPhysical = heroStats.GetStatValue(StatType.ATTACK_PHYSICAL);
@@ -38,85 +47,69 @@ public class HeroStatsStorage
         statDefenseSpecial = heroStats.GetStatValue(StatType.DEFENSE_SPECIAL);
         statSpeed = heroStats.GetStatValue(StatType.SPEED);
         statLuck = heroStats.GetStatValue(StatType.LUCK);
+        // Base Stats
+        baseMaxHealth = heroStats.GetBaseStatValue(StatType.MAX_HEALTH);
+        baseMaxMana = heroStats.GetBaseStatValue(StatType.MAX_MANA);
+        baseStatAttackPhysical = heroStats.GetBaseStatValue(StatType.ATTACK_PHYSICAL);
+        baseStatDefensePhysical = heroStats.GetBaseStatValue(StatType.DEFENSE_PHYSICAL);
+        baseStatAttackSpecial = heroStats.GetBaseStatValue(StatType.ATTACK_SPECIAL);
+        baseStatDefenseSpecial = heroStats.GetBaseStatValue(StatType.DEFENSE_SPECIAL);
+        baseStatSpeed = heroStats.GetBaseStatValue(StatType.SPEED);
+        // Status Ailments
         statusAilments = heroStats.GetStatusAilments();
     }
 
     /// <summary>
-    /// Constructor manually inputting values.
+    /// Return Unit's name.
     /// </summary>
-    public HeroStatsStorage(string unitName, byte statLevel, int currentHealth, int currentMana,
-        int statMaxHealth, int statMaxMana, int statAttackPhysical, int statDefensePhysical,
-        int statAttackSpecial, int statDefenseSpecial, int statSpeed, int statLuck, List<StatusAilment> statusAilments)
-    {
-        this.unitName = unitName;
-        this.statLevel = statLevel;
-        this.currentHealth = currentHealth;
-        this.currentMana = currentMana;
-        this.statMaxHealth = statMaxHealth;
-        this.statMaxMana = statMaxMana;
-        this.statAttackPhysical = statAttackPhysical;
-        this.statAttackSpecial = statAttackSpecial;
-        this.statDefensePhysical = statDefensePhysical;
-        this.statDefenseSpecial = statDefenseSpecial;
-        this.statSpeed = statSpeed;
-        this.statLuck = statLuck;
-        this.statusAilments = statusAilments;
-    }
-
+    /// <returns></returns>
     public string GetUnitName()
     {
         return unitName;
     }
+    
+    /// <summary>
+    /// Return Unit's level.
+    /// </summary>
+    /// <returns></returns>
     public byte GetStatLevel()
     {
         return statLevel;
     }
 
+    /// <summary>
+    /// Return the raw current health value.
+    /// </summary>
+    /// <returns></returns>
     public int GetStatCurrentHealth()
     {
         return currentHealth;
     }
 
+    /// <summary>
+    /// Return the raw current mana value.
+    /// </summary>
+    /// <returns></returns>
     public int GetStatCurrentMana()
     {
         return currentMana;
     }
 
-    public int GetStatMaxHealth()
+    /// <summary>
+    /// Return base stats in order: Max HP, Max Mana, ATK, DEF, SP.ATK, SP.DEF, SPD
+    /// </summary>
+    /// <returns></returns>
+    public int[] GetBaseStats()
     {
-        return statMaxHealth;
+        return new int[] { baseMaxHealth, baseMaxMana, baseStatAttackPhysical, baseStatDefensePhysical, baseStatAttackSpecial, baseStatDefenseSpecial, baseStatSpeed };
     }
 
-    public int GetStatMaxMana()
+    /// <summary>
+    /// Return front end stats in order: Max HP, Max Mana, ATK, DEF, SP.ATK, SP.DEF, SPD
+    /// </summary>
+    /// <returns></returns>
+    public int[] GetFrontEndStats()
     {
-        return statMaxMana;
-    }
-
-    public int GetStatAttackPhysical()
-    {
-        return statAttackPhysical;
-    }
-
-    public int GetStatAttackSpecial()
-    {
-        return statAttackSpecial;
-    }
-    public int GetStatDefensePhysical()
-    {
-        return statDefensePhysical;
-    }
-    public int GetStatDefenseSpecial()
-    {
-        return statDefenseSpecial;
-    }
-    
-    public int GetStatSpeed()
-    {
-        return statSpeed;
-    }
-
-    public int GetStatLuck()
-    {
-        return statLuck;
+        return new int[] { statMaxHealth, statMaxMana, statAttackPhysical, statDefensePhysical, statAttackSpecial, statDefenseSpecial, statSpeed };
     }
 }

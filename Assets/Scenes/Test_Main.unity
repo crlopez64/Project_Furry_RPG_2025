@@ -475,13 +475,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::HeroStats
   setName: Johnny
+  setLevel: 0
   setMaxHealth: 500
   setMaxMana: 120
-  setAttackPhysical: 25
-  setDefensePhysical: 18
-  setAttackSpecial: 20
-  setDefenseSpecial: 15
-  setSpeed: 8
+  setBaseAtkPhysical: 0
+  setBaseDefPhysical: 0
+  setBaseAtkSpecial: 0
+  setBaseDefSpecial: 0
+  setBaseSpeed: 0
   setLuck: 3
   setDamageRollerSpeed: 3
 --- !u!61 &95283204
@@ -979,13 +980,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::HeroStats
   setName: Johnny
+  setLevel: 0
   setMaxHealth: 500
   setMaxMana: 120
-  setAttackPhysical: 25
-  setDefensePhysical: 18
-  setAttackSpecial: 20
-  setDefenseSpecial: 15
-  setSpeed: 8
+  setBaseAtkPhysical: 0
+  setBaseDefPhysical: 0
+  setBaseAtkSpecial: 0
+  setBaseDefSpecial: 0
+  setBaseSpeed: 0
   setLuck: 3
   setDamageRollerSpeed: 3
 --- !u!61 &196849626
@@ -2308,13 +2310,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::HeroStats
   setName: Johnny
+  setLevel: 50
   setMaxHealth: 500
   setMaxMana: 120
-  setAttackPhysical: 25
-  setDefensePhysical: 18
-  setAttackSpecial: 20
-  setDefenseSpecial: 15
-  setSpeed: 8
+  setBaseAtkPhysical: 80
+  setBaseDefPhysical: 74
+  setBaseAtkSpecial: 71
+  setBaseDefSpecial: 70
+  setBaseSpeed: 60
   setLuck: 3
   setDamageRollerSpeed: 3
 --- !u!212 &455006205
@@ -3445,7 +3448,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyOverworld
   enemyName: Sample Enemy
-  enemyAttackScriptName: Test
   enemyLevel: 24
 --- !u!1 &1011166711
 GameObject:
@@ -3841,13 +3843,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::HeroStats
   setName: Johnny
+  setLevel: 42
   setMaxHealth: 500
   setMaxMana: 120
-  setAttackPhysical: 25
-  setDefensePhysical: 18
-  setAttackSpecial: 20
-  setDefenseSpecial: 15
-  setSpeed: 8
+  setBaseAtkPhysical: 60
+  setBaseDefPhysical: 65
+  setBaseAtkSpecial: 88
+  setBaseDefSpecial: 81
+  setBaseSpeed: 55
   setLuck: 3
   setDamageRollerSpeed: 3
 --- !u!61 &1296379689
