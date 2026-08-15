@@ -53,24 +53,8 @@ public class HeroStats : UnitStats
     public int setDamageRollerSpeed;
     
     void Awake()
-    {
-        // Set testing Stats
-        unitName = setName;
-        statLevel = setLevel;
-        baseStatMaxHealth = setMaxHealth;
-        currentHealth = setMaxHealth;
-        baseStatMaxMana = setMaxMana;
-        currentMana = setMaxMana;
-        baseStatAttackPhysical = setBaseAtkPhysical;
-        baseStatDefensePhysical = setBaseDefPhysical;
-        baseStatAttackSpecial = setBaseAtkSpecial;
-        baseStatDefenseSpecial = setBaseDefSpecial;
-        baseStatSpeed = setBaseSpeed;
-        statLuck = setLuck;
-        GetFinalStats();
+    {   
         // Set the Health Estimate Roller
-        currentHealthEstimate = currentHealth;
-        trueCurrentHealthEstimate = currentHealth;
         healthEstimateRollerSpeed = setDamageRollerSpeed;
     }
     void Start()
@@ -114,6 +98,62 @@ public class HeroStats : UnitStats
                 }
             }
         }
+    }
+
+    /// <summary>
+    /// Automatically set debug stats on scene start.
+    /// </summary>
+    public void SetDebugStats()
+    {
+        unitName = setName;
+        statLevel = setLevel;
+        baseStatMaxHealth = setMaxHealth;
+        currentHealth = setMaxHealth;
+        baseStatMaxMana = setMaxMana;
+        currentMana = setMaxMana;
+        baseStatAttackPhysical = setBaseAtkPhysical;
+        baseStatDefensePhysical = setBaseDefPhysical;
+        baseStatAttackSpecial = setBaseAtkSpecial;
+        baseStatDefenseSpecial = setBaseDefSpecial;
+        baseStatSpeed = setBaseSpeed;
+        statLuck = setLuck;
+        GetFinalStats();
+        currentHealthEstimate = currentHealth;
+        trueCurrentHealthEstimate = currentHealth;
+    }
+
+    /// <summary>
+    /// Set Hero Stats as prescribed by the Storage Unit.
+    /// </summary>
+    /// <param name="heroStatsStorage"></param>
+    public void SetUnitStats(HeroStatsStorage heroStatsStorage)
+    {
+        Debug.Log("Setting Hero Stats...");
+        // Base Stats
+        int[] getBaseStats = heroStatsStorage.GetBaseStats();
+        Debug.Log("Get Base Stat Values: " + string.Join(", ", getBaseStats));
+        baseStatMaxHealth = getBaseStats[0];
+        baseStatMaxMana = getBaseStats[1];
+        baseStatAttackPhysical = getBaseStats[2];
+        baseStatDefensePhysical = getBaseStats[3];
+        baseStatAttackSpecial = getBaseStats[4];
+        baseStatDefenseSpecial = getBaseStats[5];
+        baseStatSpeed = getBaseStats[6];
+
+        // Front-End Stats
+        int[] getFrontEndStats = heroStatsStorage.GetFrontEndStats();
+        Debug.Log("Get Front-End Stat Values: " + string.Join (", ", getFrontEndStats));
+        statMaxHealth = getFrontEndStats[0];
+        statMaxMana = getFrontEndStats[1];
+        statAttackPhysical = getFrontEndStats[2];
+        statDefensePhysical = getFrontEndStats[3];
+        statAttackSpecial = getFrontEndStats[4];
+        statDefenseSpecial = getFrontEndStats[5];
+        statSpeed = getFrontEndStats[6];
+
+        // Set current HP and Mana
+        currentHealth = heroStatsStorage.GetStatCurrentHealth();
+        currentMana = heroStatsStorage.GetStatCurrentMana();
     }
 
     /// <summary>

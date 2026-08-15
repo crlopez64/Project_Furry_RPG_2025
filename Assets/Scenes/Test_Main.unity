@@ -475,7 +475,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::HeroStats
   setName: Johnny
-  setLevel: 0
+  setLevel: 5
   setMaxHealth: 500
   setMaxMana: 120
   setBaseAtkPhysical: 0
@@ -980,7 +980,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::HeroStats
   setName: Johnny
-  setLevel: 0
+  setLevel: 6
   setMaxHealth: 500
   setMaxMana: 120
   setBaseAtkPhysical: 0

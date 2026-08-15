@@ -34,9 +34,9 @@ public class EnemyUnitHolder : MonoBehaviour
     /// <summary>
     /// Create the Enemy and their stats.
     /// </summary>
-    public void CreateEnemy(string enemyName, string enemyCode)
+    public void CreateEnemy(string enemyName)
     {
-        Debug.Log("Creating Enemy: " + enemyName + ", with code: " + enemyCode);
+        Debug.Log("Creating Enemy: " + enemyName);
         enemyStats.SetUnitName(enemyName);
         enemyStats.SetBaseStatsAndFrontEndStats(32, EnemyBaseStatsIndex.GetEnemyBaseStats(enemyName));
         enemyAttack.SetEnemyMoveList(enemyName, 32);

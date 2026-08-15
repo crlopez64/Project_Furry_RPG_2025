@@ -9,9 +9,8 @@ using UnityEngine.SceneManagement;
 public class GameManager : MonoBehaviour
 {
     private static GameManager instance;
-    private static List<string> enemyScriptCallsToBattle;
     private static List<string> enemyNamesToBattle;
-    private List<HeroStatsStorage> heroesInParty;
+    private List<HeroStatsStorage> heroesInTransit; //<= Can probably update to only be used during Overworld-Battle transitions
 
     private ItemsMenuManager itemMenuManager;
     private HudHeroManager hudHeroManager;
@@ -47,14 +46,19 @@ public class GameManager : MonoBehaviour
     {
         MakeInstance();
         currentGameState = GameState.OVERWORLD;
-        heroesInParty = new List<HeroStatsStorage>(4);
+        heroesInTransit = new List<HeroStatsStorage>(4);
         enemyNamesToBattle = new List<string>(6);
-        enemyScriptCallsToBattle = new List<string>(6);
 
         //Player and Hero Stuff
         SetPriorityInLine(heroes);
         SetHeroesToFollowLine(heroes);
         SetPlayerToMove();
+
+        //Set Debug Stats
+        foreach(GameObject hero in heroes)
+        {
+            hero.GetComponent<HeroStats>().SetDebugStats();
+        }
     }
     private void Start()
     {
@@ -65,13 +69,6 @@ public class GameManager : MonoBehaviour
         if (hudHeroManager != null)
         {
             AssignHudToHero();
-        }
-        foreach (GameObject hero in heroes)
-        {
-            if (hero.activeInHierarchy)
-            {
-                AddPartyMember(hero.GetComponent<HeroStats>());
-            }
         }
     }
 
@@ -89,23 +86,66 @@ public class GameManager : MonoBehaviour
     {
         Debug.Log("Move to Overworld");
         enemyNamesToBattle.Clear();
-        enemyScriptCallsToBattle.Clear();
         SceneManager.LoadScene("Test_Main");
         //TODO: Record player position
+    }
+
+    /// <summary>
+    /// Update stats for active Heroes in Overworld to the battle.
+    /// </summary>
+    public static void PrepareHeroesToBattle()
+    {
+        if (instance == null)
+        {
+            Debug.LogError("GameManager instance is null. Cannot prepare heroes to battle.");
+            return;
+        }
+        if (instance.heroesInTransit == null)
+        {
+            instance.heroesInTransit = new List<HeroStatsStorage>(4);
+        }
+        if (instance.heroes == null)
+        {
+            // Update when cleaning up proper game flow?
+            Debug.LogWarning("No heroes assigned to GameManager when preparing for battle.");
+            return;
+        }
+        foreach (GameObject hero in instance.heroes)
+        {
+            if (!hero.activeInHierarchy)
+            {
+                continue;
+            }
+            HeroStats heroStats = hero.GetComponent<HeroStats>();
+            if (heroStats == null)
+            {
+                Debug.LogWarning($"Hero GameObject '{hero.name}' does not have a HeroStats component.");
+                continue;
+            }
+            instance.heroesInTransit.Add(new HeroStatsStorage(heroStats));
+        }
+        Debug.Log("Heroes in Transit: " + instance.heroesInTransit.Count);
     }
 
     /// <summary>
     /// Add the Enemy Name to eventually index in Battle Manager when scenes transition to Battle.
     /// </summary>
     /// <param name="enemyName"></param>
-    public static void AddEnemyToListToBattle(string enemyName)
+    public static void PrepareEnemiesToBattle(string enemyName)
     {
         enemyNamesToBattle.Add(enemyName);
-        enemyScriptCallsToBattle.Add(enemyName);
     }
 
     /// <summary>
-    /// Return the list of front-end names to show on screen.
+    /// Return a list of Hero data.
+    /// </summary>
+    public static List<HeroStatsStorage> GetHeroesDataInTransit()
+    {
+        return instance.heroesInTransit;
+    }
+
+    /// <summary>
+    /// Return the list of enemies to battle.
     /// </summary>
     /// <returns></returns>
     public static List<string> GetEnemyNamesToBattle()
@@ -114,25 +154,17 @@ public class GameManager : MonoBehaviour
     }
 
     /// <summary>
-    /// Return the list of enemy script calls to battle to allocate their respective EnemyAttack components.
-    /// </summary>
-    /// <returns></returns>
-    public static List<string> GetEnemyScriptCallsToBattle()
-    {
-        return enemyScriptCallsToBattle;
-    }
-
-    /// <summary>
     /// Set a Party Member in the GameManager's set.
     /// </summary>
     /// <param name="hero"></param>
     public void AddPartyMember(HeroStats hero)
-    {
-        if (heroesInParty == null)
+    {   
+        if (heroesInTransit == null)
         {
-            heroesInParty = new List<HeroStatsStorage>(4);
+            heroesInTransit = new List<HeroStatsStorage>(4);
         }
-        heroesInParty.Add(new HeroStatsStorage(hero));
+        heroesInTransit.Add(new HeroStatsStorage(hero));
+        
     }
 
     /// <summary>
@@ -141,19 +173,19 @@ public class GameManager : MonoBehaviour
     /// <param name="hero"></param>
     public bool RemovePartyMember(string heroName)
     {
-        if (heroesInParty == null)
+        if (heroesInTransit == null)
         {
             return false;
         }
-        if (heroesInParty.Count == 1)
+        if (heroesInTransit.Count == 1)
         {
             return false;
         }
-        foreach(HeroStatsStorage hero in heroesInParty)
+        foreach(HeroStatsStorage hero in heroesInTransit)
         {
             if (hero.GetUnitName().Equals(heroName))
             {
-                heroesInParty.Remove(hero);
+                heroesInTransit.Remove(hero);
                 return true;
             }
         }
@@ -273,14 +305,6 @@ public class GameManager : MonoBehaviour
             }
             hudHeroManager.TurnOffHud(i);
         }
-    }
-
-    /// <summary>
-    /// Return a list of Hero data.
-    /// </summary>
-    public List<HeroStatsStorage> GetHeroesData()
-    {
-        return heroesInParty;
     }
 
     /// <summary>

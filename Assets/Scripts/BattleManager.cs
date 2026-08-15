@@ -115,8 +115,8 @@ public class BattleManager : MonoBehaviour
         unwalkableMask = LayerMask.GetMask("InfrastructureAndWalls");
 
         // Prepare Heroes and Enemies
-        PrepareEnemies(GameManager.GetEnemyNamesToBattle(), GameManager.GetEnemyScriptCallsToBattle());
-        PrepareHeroes(gameManager.GetHeroesData());
+        PrepareEnemies(GameManager.GetEnemyNamesToBattle());
+        PrepareHeroes(GameManager.GetHeroesDataInTransit());
 
         // Determine Turn Order
         DetermineTurnOrder(heroes, enemies); //TODO: Add surprise attacks?
@@ -291,18 +291,22 @@ public class BattleManager : MonoBehaviour
     /// </summary>
     private void PrepareHeroes(List<HeroStatsStorage> heroStatsStorage)
     {
-        // Allocate GameObjects count to heroStatsStorage
+        Debug.Log("Preparing Heroes.. Heroes leaving from Transit: " + heroStatsStorage.Count);
         heroes = new List<GameObject>(4);
-        HeroStats findHeroStats = FindAnyObjectByType<HeroStats>();
         for(int i = 0; i < heroStatsStorage.Count; i++)
         {
             if (i == 0)
             {
-                heroes.Add(findHeroStats.gameObject);
+                heroes.Add(FindAnyObjectByType<HeroStats>().gameObject);
                 continue;
             }
-            GameObject getCopy = GameObject.Instantiate(heroes[0], heroes[0].transform.position, heroes[0].transform.rotation);
-            heroes.Add(getCopy);
+            GameObject getAlly = GameObject.Instantiate(heroes[0], heroes[0].transform.position, heroes[0].transform.rotation);
+            heroes.Add(getAlly);
+        }
+        // Update stats
+        for (int i = 0; i < heroes.Count; i++)
+        {
+            heroes[i].GetComponent<HeroStats>().SetUnitStats(heroStatsStorage[i]);
         }
         // Spawn Heroes
         SpawnHeroesToLocation(heroes);
@@ -312,9 +316,9 @@ public class BattleManager : MonoBehaviour
     /// Add enemies to Battle Manager's attention.
     /// </summary>
     /// <param name="enemies"></param>
-    private void PrepareEnemies(List<string>listOfEnemyNames, List<string> listOfEnemyScriptCalls)
+    private void PrepareEnemies(List<string>listOfEnemyNames)
     {
-        SpawnEnemies(listOfEnemyNames, listOfEnemyScriptCalls);
+        SpawnEnemies(listOfEnemyNames);
         SpawnEnemiesToLocation(enemies);
     }
 
@@ -372,6 +376,11 @@ public class BattleManager : MonoBehaviour
         if (turnOrder.Peek().GetComponent<EnemyStats>() != null)
         {
             Debug.LogWarning("NOTE: Enemy is first in turn order.");
+            List<GameObject> getList = turnOrder.ToList();
+            for(int i = 0; i < getList.Count; i++)
+            {
+                Debug.Log("Order: " + getList[i].name + ", Speed: " + getList[i].GetComponent<UnitStats>().GetStatValue(UnitStats.StatType.SPEED));
+            }
         }
     }
 
@@ -631,17 +640,17 @@ public class BattleManager : MonoBehaviour
     /// </summary>
     /// <param name="listOfEnemyNames"></param>
     /// <param name="listOfEnemySciptCall"></param>
-    private void SpawnEnemies(List<string> listOfEnemyNames, List<string> listOfEnemySciptCall)
+    private void SpawnEnemies(List<string> listOfEnemyNames)
     {
-        enemies = new List<GameObject>(listOfEnemySciptCall.Count);
+        enemies = new List<GameObject>(listOfEnemyNames.Count);
         //Enemy Unit Holder will have EnemyStats automatically
         GameObject enemy = FindAnyObjectByType<EnemyUnitHolder>(FindObjectsInactive.Include).gameObject;
-        enemy.GetComponent<EnemyUnitHolder>().CreateEnemy(listOfEnemyNames[0], listOfEnemySciptCall[0]);
+        enemy.GetComponent<EnemyUnitHolder>().CreateEnemy(listOfEnemyNames[0]);
         enemies.Add(enemy);
-        for (int i = 1; i < listOfEnemySciptCall.Count; i++)
+        for (int i = 1; i < listOfEnemyNames.Count; i++)
         {
             GameObject getNext = Instantiate(enemy, enemy.transform.position, enemy.transform.rotation);
-            getNext.GetComponent<EnemyUnitHolder>().CreateEnemy(listOfEnemyNames[0], listOfEnemySciptCall[i]);
+            getNext.GetComponent<EnemyUnitHolder>().CreateEnemy(listOfEnemyNames[0]);
             enemies.Add(getNext);
         }
     }
