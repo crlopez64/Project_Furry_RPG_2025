@@ -787,6 +787,7 @@ public class UnitStats : MonoBehaviour
                 break;
         }
         int workingAlgorithmOutput = Mathf.FloorToInt((2 * Mathf.Clamp(statValue, 5, 100) * statLevel) / 50) + 5;
+        //Debug.Log("Unit: " + gameObject.name + "=> Stat Type: " + statType + ", Working Algorithm Value: " + workingAlgorithmOutput);
         return workingAlgorithmOutput;
     }
 

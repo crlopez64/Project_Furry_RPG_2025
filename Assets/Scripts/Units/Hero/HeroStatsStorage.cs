@@ -35,8 +35,14 @@ public class HeroStatsStorage
     {
         unitName = heroStats.GetUnitName();
         statLevel = heroStats.GetStatLevel();
-        currentMana = heroStats.GetCurrentMana();
-        currentHealth = heroStats.GetCurrentHealth();
+        // Base Stats
+        baseMaxHealth = heroStats.GetBaseStatValue(StatType.MAX_HEALTH);
+        baseMaxMana = heroStats.GetBaseStatValue(StatType.MAX_MANA);
+        baseStatAttackPhysical = heroStats.GetBaseStatValue(StatType.ATTACK_PHYSICAL);
+        baseStatDefensePhysical = heroStats.GetBaseStatValue(StatType.DEFENSE_PHYSICAL);
+        baseStatAttackSpecial = heroStats.GetBaseStatValue(StatType.ATTACK_SPECIAL);
+        baseStatDefenseSpecial = heroStats.GetBaseStatValue(StatType.DEFENSE_SPECIAL);
+        baseStatSpeed = heroStats.GetBaseStatValue(StatType.SPEED);
         // Final Stats
         statMaxMana = heroStats.GetMaxMana();
         statMaxHealth = heroStats.GetMaxHealth();
@@ -46,14 +52,9 @@ public class HeroStatsStorage
         statDefenseSpecial = heroStats.GetStatValue(StatType.DEFENSE_SPECIAL);
         statSpeed = heroStats.GetStatValue(StatType.SPEED);
         statLuck = heroStats.GetStatValue(StatType.LUCK);
-        // Base Stats
-        baseMaxHealth = heroStats.GetBaseStatValue(StatType.MAX_HEALTH);
-        baseMaxMana = heroStats.GetBaseStatValue(StatType.MAX_MANA);
-        baseStatAttackPhysical = heroStats.GetBaseStatValue(StatType.ATTACK_PHYSICAL);
-        baseStatDefensePhysical = heroStats.GetBaseStatValue(StatType.DEFENSE_PHYSICAL);
-        baseStatAttackSpecial = heroStats.GetBaseStatValue(StatType.ATTACK_SPECIAL);
-        baseStatDefenseSpecial = heroStats.GetBaseStatValue(StatType.DEFENSE_SPECIAL);
-        baseStatSpeed = heroStats.GetBaseStatValue(StatType.SPEED);
+        // Current Health + Mana
+        currentMana = heroStats.GetCurrentMana();
+        currentHealth = heroStats.GetCurrentHealth();
         // Status Ailments
         statusAilments = heroStats.GetStatusAilments();
     }

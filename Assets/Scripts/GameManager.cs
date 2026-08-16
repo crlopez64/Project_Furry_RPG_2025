@@ -44,6 +44,7 @@ public class GameManager : MonoBehaviour
 
     private void Awake()
     {
+        Debug.Log("GameManager awake!");
         MakeInstance();
         currentGameState = GameState.OVERWORLD;
         heroesInTransit = new List<HeroStatsStorage>(4);
@@ -57,6 +58,10 @@ public class GameManager : MonoBehaviour
         //Set Debug Stats
         foreach(GameObject hero in heroes)
         {
+            if (!hero.activeInHierarchy)
+            {
+                continue;
+            }
             hero.GetComponent<HeroStats>().SetDebugStats();
         }
     }

@@ -128,10 +128,10 @@ public class HeroStats : UnitStats
     /// <param name="heroStatsStorage"></param>
     public void SetUnitStats(HeroStatsStorage heroStatsStorage)
     {
-        Debug.Log("Setting Hero Stats...");
         // Base Stats
         int[] getBaseStats = heroStatsStorage.GetBaseStats();
-        Debug.Log("Get Base Stat Values: " + string.Join(", ", getBaseStats));
+        //Debug.Log("Get Base Stat Values: " + string.Join(", ", getBaseStats));
+        statLevel = heroStatsStorage.GetStatLevel();
         baseStatMaxHealth = getBaseStats[0];
         baseStatMaxMana = getBaseStats[1];
         baseStatAttackPhysical = getBaseStats[2];
@@ -142,7 +142,7 @@ public class HeroStats : UnitStats
 
         // Front-End Stats
         int[] getFrontEndStats = heroStatsStorage.GetFrontEndStats();
-        Debug.Log("Get Front-End Stat Values: " + string.Join (", ", getFrontEndStats));
+        //Debug.Log("Get Front-End Stat Values: " + string.Join (", ", getFrontEndStats));
         statMaxHealth = getFrontEndStats[0];
         statMaxMana = getFrontEndStats[1];
         statAttackPhysical = getFrontEndStats[2];

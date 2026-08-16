@@ -10,7 +10,7 @@ public class HudHeroManager : MonoBehaviour
     private void Awake()
     {
         masters = GetComponentsInChildren<HudHeroMaster>();
-        FindFirstObjectByType<GameManager>().SetHudHeroManager(this);
+        FindAnyObjectByType<GameManager>().SetHudHeroManager(this);
         AllocateGuiComponents();
     }
 

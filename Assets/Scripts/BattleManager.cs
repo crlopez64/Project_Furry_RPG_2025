@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using UnityEngine;
 
 /// <summary>
@@ -89,6 +90,7 @@ public class BattleManager : MonoBehaviour
 
     private void Awake()
     {
+        Debug.LogWarning("Battle Manager awake at new scene!!");
         cameraControl = FindAnyObjectByType<CameraControl>();
         actionCommandManager = FindAnyObjectByType<ActionCommandManager>(FindObjectsInactive.Include);
         unitSelectorManager = FindAnyObjectByType<UnitSelectorManager>(FindObjectsInactive.Include);
@@ -291,7 +293,6 @@ public class BattleManager : MonoBehaviour
     /// </summary>
     private void PrepareHeroes(List<HeroStatsStorage> heroStatsStorage)
     {
-        Debug.Log("Preparing Heroes.. Heroes leaving from Transit: " + heroStatsStorage.Count);
         heroes = new List<GameObject>(4);
         for(int i = 0; i < heroStatsStorage.Count; i++)
         {
@@ -306,7 +307,9 @@ public class BattleManager : MonoBehaviour
         // Update stats
         for (int i = 0; i < heroes.Count; i++)
         {
-            heroes[i].GetComponent<HeroStats>().SetUnitStats(heroStatsStorage[i]);
+            HeroStats heroStats = heroes[i].GetComponent<HeroStats>();
+            //heroStats.setLevel
+            heroStats.GetComponent<HeroStats>().SetUnitStats(heroStatsStorage[i]);
         }
         // Spawn Heroes
         SpawnHeroesToLocation(heroes);
@@ -376,12 +379,20 @@ public class BattleManager : MonoBehaviour
         if (turnOrder.Peek().GetComponent<EnemyStats>() != null)
         {
             Debug.LogWarning("NOTE: Enemy is first in turn order.");
+            StringBuilder builder = new StringBuilder();
             List<GameObject> getList = turnOrder.ToList();
             for(int i = 0; i < getList.Count; i++)
             {
-                Debug.Log("Order: " + getList[i].name + ", Speed: " + getList[i].GetComponent<UnitStats>().GetStatValue(UnitStats.StatType.SPEED));
+                builder.Append(getList[i].name + ", Speed: " + getList[i].GetComponent<UnitStats>().GetStatValue(UnitStats.StatType.SPEED));
+                if (i < getList.Count - 1)
+                {
+                    builder.Append (", ");
+                }
             }
+            Debug.Log("Order: " + builder.ToString());
         }
+
+
     }
 
     /// <summary>
