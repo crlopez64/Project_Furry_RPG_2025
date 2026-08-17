@@ -757,25 +757,26 @@ PrefabInstance:
       propertyPath: m_text
       value: 'NEXT TODO: Battle System (on selecting Enemy -> Action Command)
 
-        On
+        -TODO:
+        When any unit moving, trigger nearby characters to dodge away
+
+        -On
         Enemy turn -> Enemy Attack
 
-        Enemy to have stats nonzero
-
-        How
-        different is Hero Spawn at Begin Battle vs Enemy Spawn at Begin Battle?
+        -BUG: Ally pushing another ally when
+        moving directly to enemy
 
 
-        [South
-        Button] - Microsoft A Button / J Key
+        [South Button] - Microsoft A Button /
+        J Key
 
-        [East Button] - Microsoft B
-        Button / K Key
+        [East Button] - Microsoft B Button / K Key
 
-        [West Button] - Microsoft X Button / U Key
+        [West
+        Button] - Microsoft X Button / U Key
 
-        [North
-        Button] - Microsoft Y Button / I Key'
+        [North Button] - Microsoft
+        Y Button / I Key'
       objectReference: {fileID: 0}
     - target: {fileID: 7543081592991111852, guid: 24c379309cf42764b922afd066dfdaeb, type: 3}
       propertyPath: m_lineNumber
@@ -1147,13 +1148,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::HeroStats
   setName: Johnny
+  setLevel: 0
   setMaxHealth: 500
   setMaxMana: 120
-  setAttackPhysical: 25
-  setDefensePhysical: 18
-  setAttackSpecial: 20
-  setDefenseSpecial: 15
-  setSpeed: 8
+  setBaseAtkPhysical: 0
+  setBaseDefPhysical: 0
+  setBaseAtkSpecial: 0
+  setBaseDefSpecial: 0
+  setBaseSpeed: 0
   setLuck: 3
   setDamageRollerSpeed: 3
 --- !u!114 &1721951526

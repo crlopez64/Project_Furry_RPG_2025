@@ -131,10 +131,6 @@ public class UnitStats : MonoBehaviour
     /// <param name="unitName"></param>
     public void SetUnitName(string unitName)
     {
-        if (unitName != null)
-        {
-            return;
-        }
         this.unitName = unitName;
     }
 

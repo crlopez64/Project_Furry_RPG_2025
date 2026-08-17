@@ -8,7 +8,7 @@ public class CameraControl : MonoBehaviour
     private UnitMove focusUnit;
     private readonly float cameraSmoothing = 0.25f;
     private readonly float cameraStaticZposition = -20f;
-    private Vector3 battleFocus = new Vector3(4.25f, 0.85f, 0); //To add on top of hero position
+    private Vector3 battleFocus = new Vector3(5f, 0.85f, 0); //To add on top of hero position
     private Vector3 centerOfBattle;
     private Vector3 positionGoal;
     private Vector3 velocityRef;

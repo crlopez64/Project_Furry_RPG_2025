@@ -1371,9 +1371,6 @@ PrefabInstance:
       propertyPath: m_text
       value: 'NEXT TODO: Look into flow of gamepaly (Overworld > Battle > Overworld)
 
-        Give
-        Enemy Encounter stats (including health to non-zero value)
-
 
         Units
         have [X, Y, Z] freeze until moving
@@ -3829,7 +3826,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &1296379686
 MonoBehaviour:
   m_ObjectHideFlags: 0

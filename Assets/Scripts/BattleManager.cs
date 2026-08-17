@@ -27,7 +27,7 @@ public class BattleManager : MonoBehaviour
     private LayerMask unwalkableMask;
     private BattleStateForPlayer currentBattleState;
     private NavigatingMenus currentMenu;
-    private bool currentBattleStateFinishedBool;
+    private bool currentBattleStateFinishedBool = false;
 
     public enum BattleStateForPlayer : byte
     {
@@ -90,7 +90,7 @@ public class BattleManager : MonoBehaviour
 
     private void Awake()
     {
-        Debug.LogWarning("Battle Manager awake at new scene!!");
+        Debug.Log("Battle Manager awake at new scene!!");
         cameraControl = FindAnyObjectByType<CameraControl>();
         actionCommandManager = FindAnyObjectByType<ActionCommandManager>(FindObjectsInactive.Include);
         unitSelectorManager = FindAnyObjectByType<UnitSelectorManager>(FindObjectsInactive.Include);
@@ -308,7 +308,7 @@ public class BattleManager : MonoBehaviour
         for (int i = 0; i < heroes.Count; i++)
         {
             HeroStats heroStats = heroes[i].GetComponent<HeroStats>();
-            //heroStats.setLevel
+            heroStats.SetUnitName(heroStatsStorage[i].GetUnitName());
             heroStats.GetComponent<HeroStats>().SetUnitStats(heroStatsStorage[i]);
         }
         // Spawn Heroes
@@ -809,21 +809,44 @@ public class BattleManager : MonoBehaviour
                 }
                 return;
             case BaseItem.WhereToMovePriorToUse.MOVE_TO_TARGET:
-                // Get Final position to move to
+                bool hasBounds = false;
                 Bounds boundsOfTargets = new Bounds();
                 foreach (UnitAttack target in targetsToUseBaseItem)
                 {
-                    boundsOfTargets.Encapsulate(target.transform.position);
+                    if (target == null) continue;
+                    Vector3 targetPosition = target.transform.position;
+                    if (!hasBounds)
+                    {
+                        boundsOfTargets = new Bounds(targetPosition, Vector3.zero);
+                        hasBounds = true;
+                        continue;
+                    }
+                    boundsOfTargets.Encapsulate(targetPosition);
+                }
+                if (!hasBounds)
+                {
+                    Debug.LogError("ERROR: No valid targets to calculate bounds.");
+                    return;
                 }
                 if (PlayersTurn())
                 {
                     currentBattleState = BattleStateForPlayer.PLAYER_MOVING_TO_TARGET;
-                    currentUnitsTurn.GetComponent<UnitMove>().MoveUnitDirectlyToLocation(boundsOfTargets.center + (Vector3.left * 2), this, UnitMove.StateForBattleManager.ATTACK);
+                    if (currentUnitsTurn.transform.position.x <= boundsOfTargets.center.x)
+                    {
+                        currentUnitsTurn.GetComponent<UnitMove>().MoveUnitDirectlyToLocation(boundsOfTargets.center + (Vector3.left * 3), this, UnitMove.StateForBattleManager.ATTACK);
+                        return;
+                    }
+                    currentUnitsTurn.GetComponent<UnitMove>().MoveUnitDirectlyToLocation(boundsOfTargets.center + (Vector3.right * 3), this, UnitMove.StateForBattleManager.ATTACK);
                 }
                 if (EnemysTurn())
                 {
                     currentBattleState = BattleStateForPlayer.ENEMY_MOVING_TO_TARGET;
-                    currentUnitsTurn.GetComponent<UnitMove>().MoveUnitDirectlyToLocation(boundsOfTargets.center + (Vector3.right * 2), this, UnitMove.StateForBattleManager.ATTACK);
+                    if (currentUnitsTurn.transform.position.x <= boundsOfTargets.center.x)
+                    {
+                        currentUnitsTurn.GetComponent<UnitMove>().MoveUnitDirectlyToLocation(boundsOfTargets.center + (Vector3.right * 3), this, UnitMove.StateForBattleManager.ATTACK);
+                        return;
+                    }
+                    currentUnitsTurn.GetComponent<UnitMove>().MoveUnitDirectlyToLocation(boundsOfTargets.center + (Vector3.left * 3), this, UnitMove.StateForBattleManager.ATTACK);
                 }
                 return;
         }
@@ -851,7 +874,7 @@ public class BattleManager : MonoBehaviour
             }
         }
         currentUnitsTurn.GetComponent<UnitAttack>().AnimationBeginAttack();
-        Debug.Log("end of prepare attack method call");
+        Debug.Log("End of prepare attack method call");
     }
     
 

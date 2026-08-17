@@ -12,7 +12,7 @@ using UnityEngine.Windows;
 public class UnitMove : MonoBehaviour
 {
     private BattleManager battleManager;
-    protected static readonly float withinDistanceAbsoluteLocation = 0.25f;
+    protected static readonly float withinDistanceAbsoluteLocation = 0.5f;
     protected static readonly float withinDistanceGiveSpace = 3f;
     protected Transform toFollow;
     protected Animator animator;
@@ -257,7 +257,6 @@ public class UnitMove : MonoBehaviour
     /// <param name="stateForBattleManager"></param>
     public void MoveUnitDirectlyToLocation(Vector2 destination, BattleManager battleManager, StateForBattleManager stateForBattleManager)
     {
-        Debug.Log("Apparent destination: " + destination);
         this.destination = destination;
         this.battleManager = battleManager;
         this.stateForBattleManager = stateForBattleManager;

@@ -29,7 +29,7 @@ public class UnitAttack : MonoBehaviour
     {
         Debug.LogWarning("Animator begin Attack!!");
         animator.SetTrigger("BeginAttackAnim");
-        Debug.Log("Get Attack ID: " + battleManager.GetBaseItemAnimationID());
+        //Debug.Log("Get Attack ID: " + battleManager.GetBaseItemAnimationID());
         animator.SetInteger("AttackID", battleManager.GetBaseItemAnimationID());
     }
 
