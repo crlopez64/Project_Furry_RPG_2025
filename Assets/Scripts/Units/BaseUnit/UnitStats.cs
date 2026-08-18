@@ -422,6 +422,15 @@ public class UnitStats : MonoBehaviour
     }
 
     /// <summary>
+    /// Restore this Unit's HP and Mana to the maximum allowed.
+    /// </summary>
+    public void HealthAndManaFullRestore()
+    {
+        currentHealth = statMaxHealth;
+        currentMana = statMaxMana;
+    }
+
+    /// <summary>
     /// Restore this Unit's HP to the maximum health they have.
     /// </summary>
     public virtual void HealthRestore()

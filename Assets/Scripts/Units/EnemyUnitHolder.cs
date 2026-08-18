@@ -39,6 +39,7 @@ public class EnemyUnitHolder : MonoBehaviour
         Debug.Log("Creating Enemy: " + enemyName);
         enemyStats.SetUnitName(enemyName);
         enemyStats.SetBaseStatsAndFrontEndStats(32, EnemyBaseStatsIndex.GetEnemyBaseStats(enemyName));
+        enemyStats.HealthAndManaFullRestore();
         enemyAttack.SetEnemyMoveList(enemyName, 32);
     }
 }
